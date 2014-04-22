@@ -96,7 +96,8 @@ void Dialog::OnTimer()
 //WHEN KEYS ARE PRESSED
 void Dialog::keyPressEvent(QKeyEvent *e)
 {
-    //BLIP KEYS PRESS CHECK
+
+    /*
     if (e->key()==Qt::Key_Space)
     {
         ui->level->setVisible(false);
@@ -117,77 +118,35 @@ void Dialog::keyPressEvent(QKeyEvent *e)
         //Voeg die toe aan m_bubbles
         m_bubbles.push_back(bubble);
     }
-    if ((e->key()==Qt::Key_Up))
+    */
+    switch (e->key())
     {
-        pressed_up = true;
-    }
-    if (e->key()==Qt::Key_Left)
-    {
-        pressed_left = true;
-    }
-    if (e->key()==Qt::Key_Down)
-    {
-        pressed_down = true;
-    }
-    if (e->key()==Qt::Key_Right) pressed_right = true;
-
-    //BLUP KEYS PRESS CHECK
-    if ((e->key()==Qt::Key_W))
-    {
-        pressed_w = true;
-    }
-    if (e->key()==Qt::Key_A)
-    {
-        pressed_a = true;
-    }
-    if (e->key()==Qt::Key_S)
-    {
-        pressed_s = true;
-    }
-    if (e->key()==Qt::Key_D)
-    {
-        pressed_d = true;
+        //BLIP KEYS PRESS CHECK
+        case Qt::Key_Up : pressed_up = true; break;
+        case Qt::Key_Left : pressed_left = true; break;
+        case Qt::Key_Right : pressed_right = true; break;
+        //BLUP KEYS PRESS CHECK
+        case Qt::Key_W : pressed_w = true; break;
+        case Qt::Key_A : pressed_a = true; break;
+        case Qt::Key_D : pressed_d = true; break;
+        default : break;
     }
 }
 
 //KEYS RELEASED
 void Dialog::keyReleaseEvent(QKeyEvent *e)
 {
-    //BLIP KEYS RELEASE CHECK
-
-    if (e->key()==Qt::Key_Up)
+    switch (e->key())
     {
-        pressed_up = false;
-    }
-    if (e->key()==Qt::Key_Left)
-    {
-        pressed_left = false;
-    }
-    if (e->key()==Qt::Key_Down)
-    {
-        pressed_down = false;
-    }
-    if (e->key()==Qt::Key_Right)
-    {
-        pressed_right = false;
-    }
-
-    //BLUP KEYS RELEASE CHECK
-    if (e->key()==Qt::Key_W)
-    {
-        pressed_w = false;
-    }
-    if (e->key()==Qt::Key_A)
-    {
-        pressed_a = false;
-    }
-    if (e->key()==Qt::Key_S)
-    {
-        pressed_s = false;
-    }
-    if (e->key()==Qt::Key_D)
-    {
-        pressed_d = false;
+        //BLIP KEYS RELEASE CHECK
+        case Qt::Key_Up : pressed_up = false; break;
+        case Qt::Key_Left : pressed_left = false; break;
+        case Qt::Key_Right : pressed_right = false; break;
+        //BLUP KEYS RELEASE CHECK
+        case Qt::Key_W : pressed_w = false; break;
+        case Qt::Key_A : pressed_a = false; break;
+        case Qt::Key_D : pressed_d = false; break;
+        default : break;
     }
 }
 
