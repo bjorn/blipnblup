@@ -28,14 +28,11 @@ GameWidget::GameWidget() :
 {
     /*m_players.push_back(blip);
     m_players.push_back(blup);*/
-
-    //JUMP AROUND
     blip.pressed_up = true;
     blip.pressed_right = true;
 
     blup.pressed_up = true;
     blup.pressed_left = true;
-
     //SET INITIAL VALUES
     blip.x = 120;
     blip.y = 50;

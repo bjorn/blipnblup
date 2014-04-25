@@ -13,7 +13,6 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-<<<<<<< HEAD
     gamewidget.cpp \
     bubble.cpp \
     gameobject.cpp \
@@ -26,13 +25,6 @@ HEADERS  += \
     player.h
 
 FORMS    +=
-=======
-        dialog.cpp
-
-HEADERS  += dialog.h
-
-FORMS    += dialog.ui
->>>>>>> 7b22a510f3a27ced1d57614279b5f0170d639a4d
 
 RESOURCES += \
     blipnblup.qrc
