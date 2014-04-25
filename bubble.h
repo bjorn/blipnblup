@@ -10,8 +10,8 @@ public:
     int age;
 
 public slots:
-    void ApplyMovement();
-    void Draw(QPainter *painter);
+    void ApplyMovement(long ticks);
+    void Draw(QPainter *painter, long ticks);
 };
 
 #endif // BUBBLE_H

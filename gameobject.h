@@ -12,14 +12,18 @@ public:
     explicit GameObject(QObject *parent = 0, const char *img_path = ":graphics/wasp.png");
 
     QImage sprite;
+    double randomizer;
+
     bool on_ground;
+    bool facing_right;
+
     double x;
     double y;
     double x_speed;
     double y_speed;
+
     int step;
     int max_y_speed;
-    bool facing_right;
 
 public slots:
     void Fall(QPixmap, int);

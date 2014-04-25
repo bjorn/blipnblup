@@ -42,9 +42,9 @@ GameWidget::GameWidget() :
     }
 
     //N WASPS
-    for (int i = 0; i < 5; ++i)
+    for (int i = 0; i < 3; ++i)
     {
-        Wasp * wasp = new Wasp;
+        Wasp * wasp = new Wasp();
         wasp->x = rand() % 400;
         wasp->y = rand() % 300;
         wasps.push_back(wasp);
@@ -79,9 +79,9 @@ void GameWidget::OnTimer()
     for (uint i = 0; i < bubbles.size(); ++i)
     {
         bubbles[i]->Wrap();
-        bubbles[i]->ApplyMovement();
+        bubbles[i]->ApplyMovement(ticks);
       ++bubbles[i]->age;
-        if (bubbles[i]->age > 88)
+        if (bubbles[i]->age > 100-2*bubbles[i]->randomizer)
         {
             std::swap(bubbles[bubbles.size()-1], bubbles[i]);
             bubbles.pop_back();
@@ -134,11 +134,11 @@ void GameWidget::paintEvent(QPaintEvent *)
   //DRAW PLAYERS
   for(uint i = 0; i < players.size(); ++i) players[i]->Draw(&painter);
 
-  //DRAW BUBBLES
-  for(uint i = 0; i < bubbles.size(); ++i) bubbles[i]->Draw(&painter);
-
   //DRAW WASPS
   for(uint i = 0; i < wasps.size(); ++i) wasps[i]->Draw(&painter);
+
+  //DRAW BUBBLES
+  for(uint i = 0; i < bubbles.size(); ++i) bubbles[i]->Draw(&painter, ticks);
 }
 
 //ON EVERY KEYPRESS

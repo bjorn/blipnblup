@@ -20,7 +20,7 @@ private:
 
     QPixmap background;
     //GENERAL MEMBER VALUES
-    double ticks;
+    long ticks;
     int grav;
 
     //PLAYERS

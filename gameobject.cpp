@@ -5,14 +5,16 @@
 GameObject::GameObject(QObject *parent, const char *img_path) :
     QObject(parent),
     sprite(img_path),
+    randomizer(((rand()%256)*0.128)+1),
     on_ground(false),
+    facing_right(true),
+
     x(0.0),
     y(0.0),
     x_speed(0.0),
     y_speed(0.0),
     step(6),
-    max_y_speed(60),
-    facing_right(true)
+    max_y_speed(60)
 {
 }
 

@@ -9,9 +9,8 @@ class Wasp : public GameObject
 public:
     explicit Wasp(GameObject *parent = 0);
 
-    double randomizer;
 public slots:
-    void ApplyMovement(int ticks);
+    void ApplyMovement(long ticks);
 };
 
 #endif // WASP_H
