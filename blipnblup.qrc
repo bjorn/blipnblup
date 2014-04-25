@@ -1,5 +1,9 @@
 <RCC>
+<<<<<<< HEAD
     <qresource prefix="/">
+=======
+    <qresource prefix="/graphics">
+>>>>>>> 7b22a510f3a27ced1d57614279b5f0170d639a4d
         <file>graphics/blip.png</file>
         <file>graphics/blup.png</file>
         <file>graphics/level2.png</file>

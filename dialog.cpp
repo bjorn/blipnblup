@@ -119,7 +119,10 @@ void Dialog::keyPressEvent(QKeyEvent *e)
         m_bubbles.push_back(bubble);
     }
     */
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7b22a510f3a27ced1d57614279b5f0170d639a4d
     switch (e->key())
     {
         //BLIP KEYS PRESS CHECK

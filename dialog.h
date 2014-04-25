@@ -54,8 +54,12 @@ private:
     bool pressed_s;
     bool pressed_d;
 
+<<<<<<< HEAD
     std::vector<int> m_bubble_xs;
     std::vector<int> m_bubble_ys;
+=======
+    std::vector<QLabel *> m_bubbles;
+>>>>>>> 7b22a510f3a27ced1d57614279b5f0170d639a4d
 };
 
 #endif // DIALOG_H
