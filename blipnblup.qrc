@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>graphics/blip.png</file>
+        <file>graphics/blup.png</file>
+        <file>graphics/level2.png</file>
+        <file>graphics/wasp.png</file>
+        <file>graphics/bubble.png</file>
+        <file>graphics/spider.png</file>
+    </qresource>
+</RCC>
