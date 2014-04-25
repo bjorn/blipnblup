@@ -9,7 +9,7 @@ class GameObject : public QObject
 {
     Q_OBJECT
 public:
-    explicit GameObject(QObject *parent = 0);
+    explicit GameObject(QObject *parent = 0, const char *img_path = ":graphics/wasp.png");
 
     QImage sprite;
     bool on_ground;
@@ -19,12 +19,13 @@ public:
     double y_speed;
     int step;
     int max_y_speed;
-    bool facing;
+    bool facing_right;
 
 public slots:
     void Fall(QPixmap, int);
     void ApplyMovement();
     void Wrap();
+    void Draw(QPainter *painter);
 };
 
 #endif // GAMEOBJECT_H

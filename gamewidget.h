@@ -5,6 +5,7 @@
 
 #include "player.h"
 #include "bubble.h"
+#include "wasp.h"
 
 class GameWidget : public QWidget
 {
@@ -27,8 +28,9 @@ private:
     Player blup;
 
     //VECTORS
-    /*std::vector<Player> m_players;
-    std::vector<Bubble> m_bubbles;*/
+    std::vector<Player*> players;
+    std::vector<Bubble*> bubbles;
+    std::vector<Wasp*>   wasps;
 
 private slots:
     void OnTimer();

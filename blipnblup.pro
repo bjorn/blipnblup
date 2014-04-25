@@ -16,13 +16,15 @@ SOURCES += main.cpp\
     gamewidget.cpp \
     bubble.cpp \
     gameobject.cpp \
-    player.cpp
+    player.cpp \
+    wasp.cpp
 
 HEADERS  += \
     gamewidget.h \
     bubble.h \
     gameobject.h \
-    player.h
+    player.h \
+    wasp.h
 
 FORMS    +=
 

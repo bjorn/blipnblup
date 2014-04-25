@@ -20,32 +20,37 @@ GameWidget::GameWidget() :
     ticks(0),
     grav(2),
 
-    blip(),
-    blup()//,
+    blip(0, ":/graphics/blip.png"),
+    blup(0, ":/graphics/blup.png"),
 
-    /*m_players(),
-    m_bubbles()*/
+    players(),
+    bubbles(),
+    wasps()
+
 {
-    /*m_players.push_back(blip);
-    m_players.push_back(blup);*/
-    blip.pressed_up = true;
-    blip.pressed_right = true;
+    setWindowTitle("Blip 'n Blip's Skyward Adventures!");
 
-    blup.pressed_up = true;
-    blup.pressed_left = true;
-    //SET INITIAL VALUES
-    blip.x = 120;
-    blip.y = 50;
+    //PUSH PLAYER POINTERS INTO A VECTOR
+    players.push_back(&blip);
+    players.push_back(&blup);
 
-    blup.x = 280;
-    blup.y = 200;
+    //SET INITIAL VALUES FOR PLAYERS
+    for (uint i = 0; i < players.size(); ++i)
+    {
+        players[i]->x = 100 + ( 100*i );
+        players[i]->y = 50 + (50*i);
+    }
 
-    //m_players[0].name("Blip");
-    //m_players[0].imgpath(":/graphics/blip.png");
+    //N WASPS
+    for (int i = 0; i < 5; ++i)
+    {
+        Wasp * wasp = new Wasp;
+        wasp->x = rand() % 400;
+        wasp->y = rand() % 300;
+        wasps.push_back(wasp);
+    }
 
-    //m_players[1].name("Blup");
-    //m_players[1].imgpath(":/graphics/blup.png");
-
+    //CREATE TIME
     {
         QTimer * const timer = new QTimer(this);
         connect(timer, SIGNAL(timeout()),this, SLOT(OnTimer()));
@@ -62,26 +67,36 @@ GameWidget::GameWidget() :
 void GameWidget::OnTimer()
 {
     //EXECUTE PLAYER FUNCTIONS
-    blip.Wrap();
-    blip.ApplyKeys(background);
-    blip.Fall(background, grav);
-    blip.ApplyMovement();
-
-    blup.Wrap();
-    blup.ApplyKeys(background);
-    blup.Fall(background, grav);
-    blup.ApplyMovement();
-
-    //USING VECTORS
-    /*for (int player = 0; player < m_players.size(); ++player)
+    for (uint i = 0; i < players.size(); ++i)
     {
-        m_players[player].ApplyKeys();
-        m_players[player].ApplyMovement();
-        m_players[player].Wrap();
-        m_players[player].Fall();
-    }*/
+        players[i]->Wrap();
+        players[i]->ApplyKeys(background);
+        players[i]->Fall(background, grav);
+        players[i]->ApplyMovement();
+    }
 
-    //PAINT
+    //EXECUTE BUBBLE FUNCTIONS
+    for (uint i = 0; i < bubbles.size(); ++i)
+    {
+        bubbles[i]->Wrap();
+        bubbles[i]->ApplyMovement();
+      ++bubbles[i]->age;
+        if (bubbles[i]->age > 88)
+        {
+            std::swap(bubbles[bubbles.size()-1], bubbles[i]);
+            bubbles.pop_back();
+        }
+    }
+
+    //EXECUTE WASP FUNCTIONS
+    for (uint i = 0; i < wasps.size(); ++i)
+    {
+        wasps[i]->Wrap();
+        wasps[i]->ApplyMovement(ticks);
+    }
+
+
+    //CALL PAINTER
     this->repaint();
 
     //PASS TIME
@@ -117,20 +132,13 @@ void GameWidget::paintEvent(QPaintEvent *)
   painter.drawPixmap(0,0,background.width(),background.height(),background);
 
   //DRAW PLAYERS
-  QPixmap blip_flip = QPixmap::fromImage(blip.sprite.mirrored(!blip.facing, false));
-  painter.drawPixmap(blip.x,blip.y, blip.sprite.width(), blip.sprite.height(), blip_flip);
-  QPixmap blup_flip = QPixmap::fromImage(blup.sprite.mirrored(!blup.facing, false));
-  painter.drawPixmap(blup.x,blup.y, blup.sprite.width(), blup.sprite.height(), blup_flip);
+  for(uint i = 0; i < players.size(); ++i) players[i]->Draw(&painter);
 
-  //USING VECTORS
-    /*for (char player = 0; player < m_players.size(); ++player)
-    {
-      QPixmap pixmap(":/graphics/placeholder.png");
-      painter.drawPixmap(
-        m_players[player].x, m_players[player].y,
-        m_players[player].img.width(), m_players[player].img.height(),
-        pixmap);
-    }*/
+  //DRAW BUBBLES
+  for(uint i = 0; i < bubbles.size(); ++i) bubbles[i]->Draw(&painter);
+
+  //DRAW WASPS
+  for(uint i = 0; i < wasps.size(); ++i) wasps[i]->Draw(&painter);
 }
 
 //ON EVERY KEYPRESS
@@ -139,65 +147,17 @@ void GameWidget::keyPressEvent(QKeyEvent *e)
     switch (e->key())
     {
         //BLIP KEYS PRESS CHECK
-        case Qt::Key_Up    : blip.pressed_up = true; break;
-        case Qt::Key_Left  : blip.pressed_left = true; break;
-        case Qt::Key_Right : blip.pressed_right = true; break;
+        case Qt::Key_Up     : players[0]->pressed_up    = true; break;
+        case Qt::Key_Left   : players[0]->pressed_left  = true; break;
+        case Qt::Key_Right  : players[0]->pressed_right = true; break;
+        case Qt::Key_Control: bubbles.push_back(players[0]->Shoot()); break;
         //BLUP KEYS PRESS CHECK
-        case Qt::Key_W     : blup.pressed_up = true; break;
-        case Qt::Key_A     : blup.pressed_left = true; break;
-        case Qt::Key_D     : blup.pressed_right = true; break;
+        case Qt::Key_W      : players[1]->pressed_up    = true; break;
+        case Qt::Key_A      : players[1]->pressed_left  = true; break;
+        case Qt::Key_D      : players[1]->pressed_right = true; break;
+        case Qt::Key_Space  : bubbles.push_back(players[1]->Shoot()); break;
         default : break;
     }
-    //Shoot();
-      /*Bubble bubble;
-      bubble.x = x;
-      bubble.y = y;
-      switch (facing)
-      {
-        case 0 : bubble.x_speed = -20; break;
-        case 1 : bubble.x_speed =  20; break;
-      }
-
-      m_bubbles.push_back(bubble);
-
-      {
-        const int sz = static_cast<int>(m_bubbles.size());
-        for (int i=0; i!=sz; ++i)
-        {
-            ++m_bubbles[i].x;
-            m_bubbles[i].y = m_bubbles[i].x +12;
-        }
-      }
-
-      {
-        const int to_kill = 3;
-        const int sz = static_cast<int>(m_bubbles.size());
-        assert(sz == 6);
-        std::swap(m_bubbles[to_kill],m_bubbles[sz - 1]);
-        m_bubbles.pop_back();
-      }*/
-        /*
-        if (e->key()==Qt::Key_Space)
-        {
-            ui->level->setVisible(false);
-            //Maak een nieuwe label
-            QLabel * bubble = new QLabel(this);
-            //assert(this->layout());
-
-            bubble->setHidden(false);
-            bubble->setVisible(true);
-            //bubble->
-            assert(!bubble->isHidden());
-
-            //Prepareer de bubbel
-            QPixmap pixmap(":/graphics/bubble.png");
-            assert(!pixmap.width() > 0);
-            bubble->setPixmap(pixmap);
-            bubble->setGeometry(32,32,32,32);
-            //Voeg die toe aan m_bubbles
-            m_bubbles.push_back(bubble);
-        } //Dat dit niet werkte had waarschijnlijk met het pad te maken (prefix+directory)
-        */
 }
 
 
