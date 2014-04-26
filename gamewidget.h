@@ -21,7 +21,7 @@ private:
     QPixmap background;
     //GENERAL MEMBER VALUES
     long ticks;
-    int grav;
+    double grav;
 
     //PLAYERS
     Player blip;

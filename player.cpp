@@ -8,7 +8,7 @@ Player::Player(GameObject *parent, const char *img_path) :
     pressed_left(false),
     pressed_right(false),
     pressed_down(false),
-    jump(20)
+    jump(12)
 {
 }
 
@@ -18,40 +18,84 @@ Bubble * Player::Shoot()
     bubble->x = x;
     bubble->y = y;
     bubble->y_speed = 0;
-    bubble->x_speed = (20*(-1+2*facing_right))+(5*pressed_right)-(5*pressed_left);
+    bubble->x_speed = (10*(-1+2*facing_right))+(3*pressed_right)-(3*pressed_left);
     return bubble;
 }
 
 
 
 //APPLY INPUT EFFECTS
-void Player::ApplyKeys(QPixmap background)
+void Player::ApplyKeys()
 {
-    //BLIP STEP
+    //JUMP
     if (pressed_up && on_ground)
     {
         on_ground = false;
         y_speed -= jump;
     }
+
+    //FORCE LEFT
     if (pressed_left)
     {
         facing_right = false;
-        const QRgb sidepixel = background.toImage().pixel(
-          x + sprite.width()/2  -  step,
-          y + sprite.height() - (step+1)
-        );
-        const int red = qRed(sidepixel);
-        if (!(red % 2)) x -= step;
+        if (x_speed > -step) x_speed -= 0.25+(on_ground);
     }
 
+    //FORCE RIGHT
     if (pressed_right)
     {
         facing_right = true;
-        const QRgb sidepixel = background.toImage().pixel(
-          x + sprite.width()/2  +  step,
-          y + sprite.height() - (step+1)
-        );
-        const int red = qRed(sidepixel);
-        if (!(red % 2)) x += step;
+        if (x_speed < step) x_speed += 0.25+(on_ground);
     }
+}
+
+void Player::ApplyMovement(QPixmap background)
+{
+
+    //COLLISION DETECTION TO THE LEFT
+    if (x_speed < 0)
+    {
+        int check_x = (x+(sprite.width()/2));
+        int check_y = (y+(sprite.height())-4);
+        for(int i = 0; i < -x_speed; ++i)
+        {
+            if (--check_x < 0) check_x += 400;
+            if (check_x > 399) check_x -= 400;
+            if (--check_y < 0) check_y += 300;
+            if (check_y > 299) check_y -= 300;
+            const QRgb sidepixel = background.toImage().pixel(check_x, check_y);
+            const int red = qRed(sidepixel);
+            if ((!red % 2))
+            {
+                x -= i/*-1*/;
+                x_speed = 0;
+            }
+        }
+    }
+
+    //COLLISION DETECTION TO THE RIGHT
+    if (x_speed > 0)
+    {
+        int check_x = (x+(sprite.width()/2));
+        int check_y = (y+(sprite.height())-4);
+        for(int i = 0; i < x_speed; ++i)
+        {
+            if (++check_x < 0) check_x += 400;
+            if (check_x > 399) check_x -= 400;
+            if (--check_y < 0) check_y += 300;
+            if (check_y > 299) check_y -= 300;
+            const QRgb sidepixel = background.toImage().pixel(check_x, check_y);
+            const int red = qRed(sidepixel);
+            if ((!red % 2))
+            {
+                x += i/*-1*/;
+                x_speed = 0;
+            }
+        }
+    }
+
+    x += x_speed;
+    y += y_speed;
+
+    if (on_ground) x_speed *= 0.8;
 }

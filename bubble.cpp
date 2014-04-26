@@ -10,17 +10,17 @@ Bubble::Bubble(GameObject *parent) :
 
 void Bubble::ApplyMovement(long ticks)
 {
-    if (y_speed > -5) y_speed -= 0.1;
-    x_speed *= 0.9;
+    if (y_speed > -2.5) y_speed -= 0.1;
+    x_speed *= 0.95;
 
-    x += x_speed + (2*sin(0.10*ticks+randomizer));
+    x += x_speed + (sin(0.05*ticks+randomizer));
     y += y_speed;
 }
 
 void Bubble::Draw(QPainter *painter, long ticks)
 {
-    const double width  = sprite.width() - abs(x_speed)/2 + (2*sin(0.10*ticks+randomizer));
-    const double height = sprite.height()+ abs(x_speed)/4 + (2*sin(0.11*ticks+randomizer));
+    const double width  = sprite.width() - abs(x_speed)/2 + (2*sin(0.050*ticks+randomizer));
+    const double height = sprite.height()+ abs(x_speed)/4 + (2*sin(0.055*ticks+randomizer));
     const double dx = (sprite.width()-width)/2.0;
     const double dy = (sprite.height()-height)/2.0;
 

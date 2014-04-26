@@ -16,7 +16,8 @@ public:
     bool pressed_down;
 
 public slots:
-    void ApplyKeys(QPixmap);
+    void ApplyKeys();
+    void ApplyMovement(QPixmap background);
     Bubble * Shoot();
 
 private:

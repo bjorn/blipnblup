@@ -26,7 +26,7 @@ public:
     int max_y_speed;
 
 public slots:
-    void Fall(QPixmap, int);
+    void Fall(QPixmap, double grav);
     void ApplyMovement();
     void Wrap();
     void Draw(QPainter *painter);

@@ -13,16 +13,18 @@ GameObject::GameObject(QObject *parent, const char *img_path) :
     y(0.0),
     x_speed(0.0),
     y_speed(0.0),
-    step(6),
-    max_y_speed(60)
+    step(3),
+    max_y_speed(42)
 {
 }
 
 
 //DOWNWARD PIXEL COLLITION
-void GameObject::Fall(QPixmap background,int grav)
+void GameObject::Fall(QPixmap background,double grav)
 {
-    const QRgb floorpixel = background.toImage().pixel( x+(sprite.width()/2) , y+sprite.height()-2 );
+    const int check_x = (x+(sprite.width()/2));
+    const int check_y = (y+(sprite.height())-2);
+    const QRgb floorpixel = background.toImage().pixel( check_x , check_y );
     const int red = qRed(floorpixel);
     if (!(red % 2))
     {
@@ -34,7 +36,7 @@ void GameObject::Fall(QPixmap background,int grav)
     {
         for(int i = -(step+1); i <= y_speed; ++i)
         {
-            const QRgb floorpixel = background.toImage().pixel( x+(sprite.width()/2) , y+sprite.height()+i-2 );
+            const QRgb floorpixel = background.toImage().pixel( check_x , check_y+i );
             const int red = qRed(floorpixel);
             if (red % 2)
             {
@@ -55,7 +57,7 @@ void GameObject::ApplyMovement()
 }
 
 
-//WRAP
+//POSITION WRAPPING
 void GameObject::Wrap()
 {
     const int half_width  = sprite.width()/2;
@@ -67,18 +69,21 @@ void GameObject::Wrap()
     if((y <     -half_height) && (y_speed < 0)) y = 300 -half_height; //TOP TO BOTTOM
 }
 
+//DRAW OBJECT
 void GameObject::Draw(QPainter *painter)
 {
     const int width  = sprite.width();
     const int height = sprite.height();
     QPixmap flip = QPixmap::fromImage(sprite.mirrored(!facing_right, false));
     painter->drawPixmap( x, y, width, height, flip);
-    //WRAPPING
+    //SPRITE WRAPPING
+        //LEFT RIGHT
     if( x <   0)          painter->drawPixmap(x+400, y    , width, height, flip);
     if( x > 400 - width)  painter->drawPixmap(x-400, y    , width, height, flip);
+        //TOP BOTTOM
     if( y <   0)          painter->drawPixmap(x    , y+300, width, height, flip);
     if( y > 300 - height) painter->drawPixmap(x    , y-300, width, height, flip);
-
+        //CORNERS
     if(x <   0         && y <   0)          painter->drawPixmap(x+400, y+300, width, height, flip);
     if(x > 400 - width && y <   0)          painter->drawPixmap(x-400, y+300, width, height, flip);
     if(x > 400 - width && y > 300 - height) painter->drawPixmap(x-400, y-300, width, height, flip);
