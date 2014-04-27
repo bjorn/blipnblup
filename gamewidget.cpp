@@ -40,7 +40,7 @@ GameWidget::GameWidget() :
         players[i]->y = 50 + (50*i);
     }
     //SPAWN WASPS
-    for (int i = 0; i < 3; ++i){
+    for (int i = 0; i < 1; ++i){
         Wasp * wasp = new Wasp();
         wasp->x = rand() % 400;
         wasp->y = rand() % 300;
