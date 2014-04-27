@@ -17,8 +17,8 @@ public:
     void paintEvent(QPaintEvent *);
 private:
     //BACKGROUND
-
     QPixmap background;
+
     //GENERAL MEMBER VALUES
     long ticks;
     double grav;

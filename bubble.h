@@ -1,6 +1,7 @@
 #ifndef  BUBBLE_H
 #define  BUBBLE_H
 #include <gameobject.h>
+#include <wasp.h>
 
 class Bubble : public GameObject
 {
@@ -11,7 +12,7 @@ public:
 
 public slots:
     void ApplyMovement(long ticks);
-    void Draw(QPainter *painter, long ticks);
+    void Draw(QPainter * painter, long ticks);
 };
 
 #endif // BUBBLE_H

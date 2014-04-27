@@ -2,6 +2,7 @@
 #define WASP_H
 
 #include <gameobject.h>
+#include <bubble.h>
 
 class Wasp : public GameObject
 {

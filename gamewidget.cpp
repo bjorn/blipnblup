@@ -66,21 +66,50 @@ void GameWidget::OnTimer()
         players[i]->Fall(background, grav);
         players[i]->ApplyMovement(background);
     }
+
+    //EXECUTE WASP FUNCTIONS
+    for (uint i = 0; i < wasps.size(); ++i){
+        wasps[i]->Wrap();
+        wasps[i]->ApplyMovement(ticks);
+        //WASP PLAYER INTERACTION
+        for (uint j = 0; j < players.size(); ++j){
+            if (wasps[i]->Distance(players[j]) < 23){
+                if (!players[j]->dead){
+                    players[j]->dead = true;
+                    players[j]->y_speed = -3;
+                }
+            }
+        }
+    }
+
     //EXECUTE BUBBLE FUNCTIONS
     for (uint i = 0; i < bubbles.size(); ++i){
         bubbles[i]->Wrap();
         bubbles[i]->ApplyMovement(ticks);
+        //AGE AND REMOVE
       ++bubbles[i]->age;
         if (bubbles[i]->age > 200-4*bubbles[i]->randomizer){
             std::swap(bubbles[bubbles.size()-1], bubbles[i]);
             bubbles.pop_back();
         }
+        //BUBBLE WASP INTERACTION
+        for (uint j = 0; j < wasps.size(); ++j){
+            if (bubbles[i]->Distance(wasps[j]) < 23){
+                std::swap(wasps[wasps.size()-1], wasps[j]);
+                wasps.pop_back();
+            }
+        }
+        //REVIVE
+        for (uint j = 0; j < players.size(); ++j){
+            if (bubbles[i]->Distance(players[j]) < 23){
+                if (players[j]->dead){
+                    players[j]->dead = false;
+                    players[j]->y_speed = -3;
+                }
+            }
+        }
     }
-    //EXECUTE WASP FUNCTIONS
-    for (uint i = 0; i < wasps.size(); ++i){
-        wasps[i]->Wrap();
-        wasps[i]->ApplyMovement(ticks);
-    }
+
     //CALL PAINTER
     this->repaint();
 
@@ -108,7 +137,7 @@ void GameWidget::paintEvent(QPaintEvent *)
 }
 
 
-//ON EVERY KEYPRESS
+//ON EVERY KEYS PRESS
 void GameWidget::keyPressEvent(QKeyEvent *e)
 {
     switch (e->key()){
@@ -116,19 +145,26 @@ void GameWidget::keyPressEvent(QKeyEvent *e)
         case Qt::Key_Up     : players[0]->pressed_up    = true;       break;
         case Qt::Key_Left   : players[0]->pressed_left  = true;       break;
         case Qt::Key_Right  : players[0]->pressed_right = true;       break;
-        case Qt::Key_Control: bubbles.push_back(players[0]->Shoot()); break;
+        case Qt::Key_Control: if (!players[0]->dead) bubbles.push_back(players[0]->Shoot()); break;
 
         //BLUP KEYS PRESS CHECK
         case Qt::Key_W      : players[1]->pressed_up    = true;       break;
         case Qt::Key_A      : players[1]->pressed_left  = true;       break;
         case Qt::Key_D      : players[1]->pressed_right = true;       break;
-        case Qt::Key_Space  : bubbles.push_back(players[1]->Shoot()); break;
+        case Qt::Key_Space  : if (!players[1]->dead) bubbles.push_back(players[1]->Shoot()); break;
+
+        //SPAWN WASPS (1)
+        case Qt::Key_1      : {Wasp*wasp = new Wasp();
+                               wasp->x = rand() % 400;
+                               wasp->y = rand() % 300;
+                               wasps.push_back(wasp);}
+                              break;
         default : break;
     }
 }
 
 
-//ON EVERY KEYRELEASE
+//ON EVERY KEYS RELEASE
 void GameWidget::keyReleaseEvent(QKeyEvent *e)
 {
     switch (e->key()){

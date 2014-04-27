@@ -6,6 +6,7 @@ Wasp::Wasp(GameObject *parent) :
 {
 }
 
+//MOVE WASP
 void Wasp::ApplyMovement(long ticks)
 {
     x_speed = 3*sin( (0.015*ticks)+randomizer );

@@ -1,23 +1,38 @@
 #include "gameobject.h"
 #include <QPainter>
+#include <cmath>
 
 
 GameObject::GameObject(QObject *parent, const char *img_path) :
     QObject(parent),
     sprite(img_path),
     randomizer(((rand()%256)*0.128)+1),
-    on_ground(false),
-    facing_right(true),
 
     x(0.0),
     y(0.0),
+    hit_dx(0),
+    hit_dy(0),
     x_speed(0.0),
     y_speed(0.0),
+
+    dead(false),
+    on_ground(false),
+    facing_right(true),
     step(3),
     max_y_speed(42)
 {
+    hit_dx = sprite.width() /2;
+    hit_dy = sprite.height()/2;
 }
 
+//CHECK DISTANCE BETWEEN TWO GAMEOBJECTS
+double GameObject::Distance(GameObject * other)
+{
+    double dx, dy;
+    dx = other->x - x;
+    dy = other->y - y;
+    return sqrt((dx*dx)+(dy*dy));
+}
 
 //DOWNWARD PIXEL COLLITION
 void GameObject::Fall(QPixmap background,double grav)
@@ -62,19 +77,19 @@ void GameObject::Wrap()
 {
     const int half_width  = sprite.width()/2;
     const int half_height = sprite.height()/2;
-    //WRAP OBJECT
+
     if( x <     -half_width)                    x = 400 -half_width; //LEFT TO RIGHT
     if( x > 400 -half_width)                    x =   0 -half_width; //RIGHT TO LEFT
     if((y > 300 -half_height) && (y_speed > 0)) y =   0 -half_height; //BOTTOM TO TOP
     if((y <     -half_height) && (y_speed < 0)) y = 300 -half_height; //TOP TO BOTTOM
 }
 
-//DRAW OBJECT
+//DRAW GAMEOBJECT
 void GameObject::Draw(QPainter *painter)
 {
     const int width  = sprite.width();
     const int height = sprite.height();
-    QPixmap flip = QPixmap::fromImage(sprite.mirrored(!facing_right, false));
+    QPixmap flip = QPixmap::fromImage(sprite.mirrored(!facing_right, dead));
     painter->drawPixmap( x, y, width, height, flip);
     //SPRITE WRAPPING
         //LEFT RIGHT

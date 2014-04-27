@@ -1,4 +1,5 @@
 #include "bubble.h"
+#include <wasp.h>
 #include <QPainter>
 #include <cmath>
 
@@ -8,6 +9,7 @@ Bubble::Bubble(GameObject *parent) :
 {
 }
 
+//MOVE BUBBLE
 void Bubble::ApplyMovement(long ticks)
 {
     if (y_speed > -2.5) y_speed -= 0.1;
@@ -17,6 +19,7 @@ void Bubble::ApplyMovement(long ticks)
     y += y_speed;
 }
 
+//DRAW BUBBLE
 void Bubble::Draw(QPainter *painter, long ticks)
 {
     const double width  = sprite.width() - abs(x_speed)/2 + (2*sin(0.050*ticks+randomizer));
