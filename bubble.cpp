@@ -12,8 +12,8 @@ Bubble::Bubble(GameObject *parent) :
 //MOVE BUBBLE
 void Bubble::ApplyMovement(long ticks)
 {
-    if (y_speed > -2.5) y_speed -= 0.1;
-    x_speed *= 0.95;
+    if (y_speed > -2.5) y_speed -= 0.05;
+    x_speed *= 0.96;
 
     x += x_speed + (sin(0.05*ticks+randomizer));
     y += y_speed;

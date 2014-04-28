@@ -95,16 +95,24 @@ void GameWidget::OnTimer()
         //BUBBLE WASP INTERACTION
         for (uint j = 0; j < wasps.size(); ++j){
             if (bubbles[i]->Distance(wasps[j]) < 23){
+                //REMOVE WASP
                 std::swap(wasps[wasps.size()-1], wasps[j]);
                 wasps.pop_back();
+                //REMOVE BUBBLE
+                std::swap(bubbles[bubbles.size()-1], bubbles[i]);
+                bubbles.pop_back();
             }
         }
         //REVIVE
         for (uint j = 0; j < players.size(); ++j){
             if (bubbles[i]->Distance(players[j]) < 23){
                 if (players[j]->dead){
+                    //REVIVE PLAYER
                     players[j]->dead = false;
                     players[j]->y_speed = -3;
+                    //REMOVE BUBBLE
+                    std::swap(bubbles[bubbles.size()-1], bubbles[i]);
+                    bubbles.pop_back();
                 }
             }
         }
@@ -124,7 +132,7 @@ void GameWidget::paintEvent(QPaintEvent *)
     QPainter painter(this);
 
     //DRAW BACKGROUND
-    painter.drawPixmap(0,0,background.width(),background.height(),background);
+    painter.drawPixmap(0, 0, background.width(), background.height(), background);
 
     //DRAW PLAYERS
     for(uint i = 0; i < players.size(); ++i) players[i]->Draw(&painter);
@@ -155,10 +163,8 @@ void GameWidget::keyPressEvent(QKeyEvent *e)
 
         //SPAWN WASPS (1)
         case Qt::Key_1      : {Wasp*wasp = new Wasp();
-                               wasp->x = rand() % 400;
-                               wasp->y = rand() % 300;
                                wasps.push_back(wasp);}
-                              break;
+                               break;
         default : break;
     }
 }

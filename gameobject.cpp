@@ -2,7 +2,6 @@
 #include <QPainter>
 #include <cmath>
 
-
 GameObject::GameObject(QObject *parent, const char *img_path) :
     QObject(parent),
     sprite(img_path),
@@ -78,29 +77,32 @@ void GameObject::Wrap()
     const int half_width  = sprite.width()/2;
     const int half_height = sprite.height()/2;
 
-    if( x <     -half_width)                    x = 400 -half_width; //LEFT TO RIGHT
-    if( x > 400 -half_width)                    x =   0 -half_width; //RIGHT TO LEFT
-    if((y > 300 -half_height) && (y_speed > 0)) y =   0 -half_height; //BOTTOM TO TOP
-    if((y <     -half_height) && (y_speed < 0)) y = 300 -half_height; //TOP TO BOTTOM
+    if( x <     - half_width)                    x = 400 - half_width; //LEFT TO RIGHT
+    if( x > 400 - half_width)                    x =   0 - half_width; //RIGHT TO LEFT
+    if((y > 300 - half_height) && (y_speed > 0)) y =   0 - half_height;//BOTTOM TO TOP
+    if((y <     - half_height) && (y_speed < 0)) y = 300 - half_height;//TOP TO BOTTOM
 }
 
 //DRAW GAMEOBJECT
-void GameObject::Draw(QPainter *painter)
+void GameObject::Draw(QPainter * painter)
 {
-    const int width  = sprite.width();
-    const int height = sprite.height();
-    QPixmap flip = QPixmap::fromImage(sprite.mirrored(!facing_right, dead));
-    painter->drawPixmap( x, y, width, height, flip);
+    QTransform matrix;
+    matrix.scale(1-(2*!facing_right), 1);
+    matrix.rotate(-90*dead);
+    QPixmap result = QPixmap::fromImage(sprite.transformed(matrix));
+    const int width  = result.width();
+    const int height = result.height();
+    painter->drawPixmap( x, y, width, height, result);
     //SPRITE WRAPPING
-        //LEFT RIGHT
-    if( x <   0)          painter->drawPixmap(x+400, y    , width, height, flip);
-    if( x > 400 - width)  painter->drawPixmap(x-400, y    , width, height, flip);
-        //TOP BOTTOM
-    if( y <   0)          painter->drawPixmap(x    , y+300, width, height, flip);
-    if( y > 300 - height) painter->drawPixmap(x    , y-300, width, height, flip);
-        //CORNERS
-    if(x <   0         && y <   0)          painter->drawPixmap(x+400, y+300, width, height, flip);
-    if(x > 400 - width && y <   0)          painter->drawPixmap(x-400, y+300, width, height, flip);
-    if(x > 400 - width && y > 300 - height) painter->drawPixmap(x-400, y-300, width, height, flip);
-    if(x <   0         && y > 300 - height) painter->drawPixmap(x+400, y-300, width, height, flip);
+    //LEFT RIGHT
+    if( x <   0)          painter->drawPixmap(x+400, y    , width, height, result);
+    if( x > 400 - width)  painter->drawPixmap(x-400, y    , width, height, result);
+    //TOP BOTTOM
+    if( y <   0)          painter->drawPixmap(x    , y+300, width, height, result);
+    if( y > 300 - height) painter->drawPixmap(x    , y-300, width, height, result);
+    //CORNERS
+    if(x <   0         && y <   0)          painter->drawPixmap(x+400, y+300, width, height, result);
+    if(x > 400 - width && y <   0)          painter->drawPixmap(x-400, y+300, width, height, result);
+    if(x > 400 - width && y > 300 - height) painter->drawPixmap(x-400, y-300, width, height, result);
+    if(x <   0         && y > 300 - height) painter->drawPixmap(x+400, y-300, width, height, result);
 }

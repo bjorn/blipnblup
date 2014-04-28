@@ -20,12 +20,12 @@ private:
     QPixmap background;
 
     //GENERAL MEMBER VALUES
-    long ticks;
-    double grav;
+    long    ticks;
+    double  grav;
 
     //PLAYERS
-    Player blip;
-    Player blup;
+    Player  blip;
+    Player  blup;
 
     //VECTORS
     std::vector<Player*> players;
@@ -33,7 +33,7 @@ private:
     std::vector<Wasp*>   wasps;
 
 private slots:
-    void OnTimer();
+    void    OnTimer();
 };
 
 #endif // GAMEWIDGET_H
