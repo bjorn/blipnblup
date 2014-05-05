@@ -8,6 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+QMAKE_CXXFLAGS += -std=c++1y
 TARGET = blipnblup
 TEMPLATE = app
 
@@ -17,14 +18,16 @@ SOURCES += main.cpp\
     bubble.cpp \
     gameobject.cpp \
     player.cpp \
-    wasp.cpp
+    wasp.cpp \
+    foe.cpp
 
 HEADERS  += \
     gamewidget.h \
     bubble.h \
     gameobject.h \
     player.h \
-    wasp.h
+    wasp.h \
+    foe.h
 
 FORMS    +=
 

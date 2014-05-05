@@ -21,7 +21,7 @@ public slots:
     Bubble * Shoot();
 
 private:
-    int jump;
+    int  jump;
 };
 
 #endif // PLAYER_H

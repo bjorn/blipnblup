@@ -12,6 +12,7 @@ Player::Player(GameObject *parent, const char *img_path) :
 {
 }
 
+//SHOOT BUBBLE
 Bubble * Player::Shoot()
 {
     Bubble * bubble = new Bubble(this);
@@ -28,21 +29,21 @@ Bubble * Player::Shoot()
 void Player::ApplyKeys()
 {
     if (!dead){
-    //JUMP
-    if (pressed_up && on_ground){
-        on_ground = false;
-        y_speed -= jump;
-    }
-    //FORCE LEFT
-    if (pressed_left){
-        facing_right = false;
-        if (x_speed > -step) x_speed -= 0.25+(on_ground);
-    }
-    //FORCE RIGHT
-    if (pressed_right){
-        facing_right = true;
-        if (x_speed < step) x_speed += 0.25+(on_ground);
-    }
+        //JUMP
+        if (pressed_up && on_ground){
+            on_ground = false;
+            y_speed -= jump;
+        }
+        //FORCE LEFT
+        if (pressed_left){
+            facing_right = false;
+            if (x_speed > -step) x_speed -= 0.25+(0.75*on_ground);
+        }
+        //FORCE RIGHT
+        if (pressed_right){
+            facing_right = true;
+            if (x_speed < step) x_speed += 0.25+(0.75*on_ground);
+        }
     }
 }
 
@@ -61,7 +62,7 @@ void Player::ApplyMovement(QPixmap background)
             const QRgb sidepixel = background.toImage().pixel(check_x, check_y);
             const int red = qRed(sidepixel);
             if ((!red % 2)){
-                x -= i/*-1*/;
+                x -= i;
                 x_speed = 0;
             }
         }
@@ -79,7 +80,7 @@ void Player::ApplyMovement(QPixmap background)
             const QRgb sidepixel = background.toImage().pixel(check_x, check_y);
             const int red = qRed(sidepixel);
             if ((!red % 2)){
-                x += i/*-1*/;
+                x += i;
                 x_speed = 0;
             }
         }
@@ -88,5 +89,6 @@ void Player::ApplyMovement(QPixmap background)
     x += x_speed;
     y += y_speed;
 
-    if (on_ground) x_speed *= 0.8;
+    //SLOW DOWN
+    if (on_ground) x_speed *= 0.7;
 }

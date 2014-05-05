@@ -8,6 +8,7 @@
 #include <QPainter>
 #include <QResource>
 #include <cmath>
+#include <memory>
 
 #include "gamewidget.h"
 #include "player.h"
@@ -36,8 +37,8 @@ GameWidget::GameWidget() :
     players.push_back(&blup);
     //SET INITIAL VALUES FOR PLAYERS
     for (uint i = 0; i < players.size(); ++i){
-        players[i]->x = 100 + ( 100*i );
-        players[i]->y = 50 + (50*i);
+        players[i]->x = 51 + ( 101*i );
+        players[i]->y = 51 + ( 101*i );
     }
     //SPAWN WASPS
     for (int i = 0; i < 1; ++i){
@@ -70,14 +71,21 @@ void GameWidget::OnTimer()
     //EXECUTE WASP FUNCTIONS
     for (uint i = 0; i < wasps.size(); ++i){
         wasps[i]->Wrap();
+        if (wasps[i]->caught) wasps[i]->Fall(background, grav);
         wasps[i]->ApplyMovement(ticks);
         //WASP PLAYER INTERACTION
         for (uint j = 0; j < players.size(); ++j){
             if (wasps[i]->Distance(players[j]) < 23){
-                if (!players[j]->dead){
+                if (!players[j]->dead && !wasps[i]->caught){
                     players[j]->dead = true;
                     players[j]->y_speed = -3;
                 }
+                /*if (!players[j]->dead && wasps[i]->caught){
+                    wasps[i]->x_speed += ((wasps[i]->x-players[j]->x)/10.0)*-players[j]->x_speed;
+                    std::swap(wasps[wasps.size()-1], wasps[i]);
+                    delete wasps[wasps.size()-1];
+                    wasps.pop_back();
+                }*/
             }
         }
     }
@@ -88,28 +96,47 @@ void GameWidget::OnTimer()
         bubbles[i]->ApplyMovement(ticks);
         //AGE AND REMOVE
       ++bubbles[i]->age;
-        if (bubbles[i]->age > 200-4*bubbles[i]->randomizer){
+        if (bubbles[i]->age > 201-4*bubbles[i]->randomizer){
             std::swap(bubbles[bubbles.size()-1], bubbles[i]);
+            delete bubbles[bubbles.size()-1];
             bubbles.pop_back();
         }
         //BUBBLE WASP INTERACTION
         for (uint j = 0; j < wasps.size(); ++j){
-            if (bubbles[i]->Distance(wasps[j]) < 23){
-                std::swap(wasps[wasps.size()-1], wasps[j]);
-                wasps.pop_back();
+            if (abs(bubbles[i]->x_speed) > 2 && bubbles[i]->Distance(wasps[j]) < 23){
+                if (!wasps[j]->caught){
+                    //CATCH WASP
+                    wasps[j]->caught = true;
+                    //REMOVE BUBBLE
+                    std::swap(bubbles[bubbles.size()-1], bubbles[i]);
+                    delete bubbles[bubbles.size()-1];
+                    bubbles.pop_back();
+                }
+                if (wasps[j]->caught){
+                    wasps[j]->x_speed += bubbles[i]->x_speed/20.0;
+                }
             }
         }
         //REVIVE
         for (uint j = 0; j < players.size(); ++j){
             if (bubbles[i]->Distance(players[j]) < 23){
                 if (players[j]->dead){
+                    //REVIVE PLAYER
                     players[j]->dead = false;
                     players[j]->y_speed = -3;
+                    //REMOVE BUBBLE
+                    std::swap(bubbles[bubbles.size()-1], bubbles[i]);
+                    delete bubbles[bubbles.size()-1];
+                    bubbles.pop_back();
                 }
             }
         }
     }
-
+    //GAME OVER
+    if (players[0]->dead && players[1]->dead && wasps.size() < 101 && !(ticks%10) ){
+        Wasp*wasp = new Wasp();
+        wasps.push_back(wasp);
+    }
     //CALL PAINTER
     this->repaint();
 
@@ -122,9 +149,10 @@ void GameWidget::OnTimer()
 void GameWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
+    //painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
 
     //DRAW BACKGROUND
-    painter.drawPixmap(0,0,background.width(),background.height(),background);
+    painter.drawPixmap(0, 0, background.width(), background.height(), background);
 
     //DRAW PLAYERS
     for(uint i = 0; i < players.size(); ++i) players[i]->Draw(&painter);
@@ -151,14 +179,12 @@ void GameWidget::keyPressEvent(QKeyEvent *e)
         case Qt::Key_W      : players[1]->pressed_up    = true;       break;
         case Qt::Key_A      : players[1]->pressed_left  = true;       break;
         case Qt::Key_D      : players[1]->pressed_right = true;       break;
-        case Qt::Key_Space  : if (!players[1]->dead) bubbles.push_back(players[1]->Shoot()); break;
+        case Qt::Key_Space  : if (!players[1]->dead && bubbles.size()<5) bubbles.push_back(players[1]->Shoot()); break;
 
         //SPAWN WASPS (1)
         case Qt::Key_1      : {Wasp*wasp = new Wasp();
-                               wasp->x = rand() % 400;
-                               wasp->y = rand() % 300;
                                wasps.push_back(wasp);}
-                              break;
+                               break;
         default : break;
     }
 }

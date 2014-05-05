@@ -6,5 +6,6 @@
         <file>graphics/wasp.png</file>
         <file>graphics/bubble.png</file>
         <file>graphics/spider.png</file>
+        <file>graphics/wasp_caught.png</file>
     </qresource>
 </RCC>
