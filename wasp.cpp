@@ -9,19 +9,21 @@ Wasp::Wasp(Foe *parent) :
 }
 
 //MOVE WASP
-void Wasp::ApplyMovement(long ticks)
+void Wasp::ApplyMovement(long ticks, std::vector<double> sine)
 {
     if (!caught){
-        x_speed = 1.2*sin( (0.015*ticks)+randomizer );
+        int phase = floor(ticks+randomizer);
+        x_speed = 1.2*sine[phase%512];
         x_speed = pow(x_speed,9);
 
-        y_speed = (sin( (0.110*ticks)+randomizer ));
+        phase = floor((8*ticks)+randomizer);
+        y_speed = sine[phase%512];
 
         if (x_speed > 0) facing_right = true;
         else             facing_right = false;
     }
     if (on_ground){
-        x_speed *= 0.97;
+        x_speed  *= 0.97;
         rot_speed = 3*x_speed;
     }
 

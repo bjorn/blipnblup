@@ -15,6 +15,7 @@ Player::Player(GameObject *parent, const char *img_path) :
 //SHOOT BUBBLE
 Bubble * Player::Shoot()
 {
+    charge = 0;
     Bubble * bubble = new Bubble(this);
     bubble->x = x;
     bubble->y = y;

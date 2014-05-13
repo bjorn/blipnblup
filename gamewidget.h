@@ -4,8 +4,7 @@
 #include <QWidget>
 
 #include "player.h"
-//#include "bubble.h"
-//#include "wasp.h"
+#include "bubbleaf.h"
 
 struct Wasp;
 struct Bubble;
@@ -19,8 +18,10 @@ public:
     void keyReleaseEvent(QKeyEvent *);
     void paintEvent(QPaintEvent *);
 private:
-    //BACKGROUND
+    //GLOBAL PIXMAPS
     QPixmap background;
+    QPixmap full_background;
+    QPixmap composit;
 
     //GENERAL MEMBER VALUES
     long    ticks;
@@ -30,7 +31,11 @@ private:
     Player  blip;
     Player  blup;
 
+    //BUBBLEAF
+    Bubbleaf bubbleaf;
+
     //VECTORS
+    std::vector<double>  sine;
     std::vector<Player*> players;
     std::vector<Bubble*> bubbles;
     std::vector<Wasp*>   wasps;

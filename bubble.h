@@ -11,8 +11,8 @@ public:
     int  age;
 
 public slots:
-    void ApplyMovement(long ticks);
-    void Draw(QPainter * painter, long ticks);
+    void ApplyMovement(long ticks, std::vector<double> sine);
+    void Draw(QPainter * painter, long ticks, std::vector<double> sine);
 };
 
 #endif // BUBBLE_H

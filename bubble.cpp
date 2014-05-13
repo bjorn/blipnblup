@@ -12,22 +12,26 @@ Bubble::Bubble(GameObject *parent) :
 }
 
 //MOVE BUBBLE
-void Bubble::ApplyMovement(long ticks)
+void Bubble::ApplyMovement(long ticks, std::vector<double> sine)
 {
     if (y_speed > -2.5) y_speed -= 0.05;
     x_speed *= 0.96;
 
-    x += x_speed + (sin(0.05*ticks+randomizer));
+    int phase = floor(3*ticks+randomizer);
+    x += x_speed + sine[phase%512];
     y += y_speed;
 }
 
 //DRAW BUBBLE
-void Bubble::Draw(QPainter *painter, long ticks)
+void Bubble::Draw(QPainter *painter, long ticks, std::vector<double> sine)
 {
-    const double width  = sprite.width() - abs(x_speed)/2 + (2*sin(0.050*ticks+randomizer));
-    const double height = sprite.height()+ abs(x_speed)/4 + (2*sin(0.055*ticks+randomizer));
+    int phase = 3*ticks+randomizer;
+    const double width  = sprite.width() - abs(x_speed)/2 + (2*sine[phase%512]);
+    const double height = sprite.height()+ abs(x_speed)/4 + (2*sine[phase%512]);
     const double dx = (sprite.width()-width)/2.0;
     const double dy = (sprite.height()-height)/2.0;
+    hit_dx = (sprite.width()+dx)/2.0;
+    hit_dy = (sprite.height()+dy)/2.0;
 
     QPixmap flip = QPixmap::fromImage(sprite.mirrored(!facing_right, false));
     painter->drawPixmap( x+dx, y+dy, width, height, flip);

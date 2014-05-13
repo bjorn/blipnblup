@@ -4,8 +4,11 @@
 
 GameObject::GameObject(QObject *parent, const char *img_path) :
     QObject(parent),
+
     sprite(img_path),
-    randomizer(((rand()%256)*0.128)+1),
+    randomizer(rand()%512),
+    charge(10),
+    fullcharge(30),
 
     x(0.0),
     y(0.0),
@@ -30,17 +33,21 @@ GameObject::GameObject(QObject *parent, const char *img_path) :
 //CHECK DISTANCE BETWEEN TWO GAMEOBJECTS
 double GameObject::Distance(GameObject * other)
 {
-    double dx, dy;
-    dx = other->x - x;
-    dy = other->y - y;
+    int dx, dy;
+    dx = (other->x + other->hit_dx) - (x + hit_dx);
+    dy = (other->y + other->hit_dy) - (y + hit_dy);
+    dx = dx%400;
+    dy = dy%300;
     return sqrt((dx*dx)+(dy*dy));
 }
 
 //DOWNWARD PIXEL COLLITION
 void GameObject::Fall(QPixmap background,double grav)
 {
-    const int check_x = (x+(sprite.width()/2));
-    const int check_y = (y+(sprite.height())-2);
+    int check_x = (x+(sprite.width()/2));
+    check_x = check_x%400;
+    int check_y = (y+(sprite.height())-2);
+    check_y = check_y%300;
     const QRgb floorpixel = background.toImage().pixel( check_x , check_y );
     const int red = qRed(floorpixel);
     if (!(red % 2))
@@ -77,13 +84,10 @@ void GameObject::ApplyMovement()
 //POSITION WRAPPING
 void GameObject::Wrap()
 {
-    const int half_width  = sprite.width()/2;
-    const int half_height = sprite.height()/2;
-
-    if( x <     - half_width)                    x = 400 - half_width; //LEFT TO RIGHT
-    if( x > 400 - half_width)                    x =   0 - half_width; //RIGHT TO LEFT
-    if((y > 300 - half_height) && (y_speed > 0)) y =   0 - half_height;//BOTTOM TO TOP
-    if((y <     - half_height) && (y_speed < 0)) y = 300 - half_height;//TOP TO BOTTOM
+    if( x <  0)                    x = 400; //LEFT TO RIGHT
+    if( x > 400)                   x =   0; //RIGHT TO LEFT
+    if((y > 300) && (y_speed > 0)) y =   0; //BOTTOM TO TOP
+    if((y <   0)   && (y_speed < 0)) y = 300; //TOP TO BOTTOM
 }
 
 //DRAW GAMEOBJECT

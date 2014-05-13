@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     gameobject.cpp \
     player.cpp \
     wasp.cpp \
-    foe.cpp
+    foe.cpp \
+    bubbleaf.cpp
 
 HEADERS  += \
     gamewidget.h \
@@ -27,9 +28,13 @@ HEADERS  += \
     gameobject.h \
     player.h \
     wasp.h \
-    foe.h
+    foe.h \
+    bubbleaf.h
 
 FORMS    +=
 
 RESOURCES += \
     blipnblup.qrc
+
+OTHER_FILES += \
+    ideas.txt

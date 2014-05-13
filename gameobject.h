@@ -11,8 +11,9 @@ class GameObject : public QObject
 public:
     explicit GameObject(QObject *parent = 0, const char *img_path = ":graphics/wasp.png");
     QImage sprite;
-    double randomizer;
-    //long * ticks;
+    int randomizer;
+    int charge;
+    int fullcharge;
 
     double x;
     double y;
