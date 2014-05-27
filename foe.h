@@ -7,13 +7,20 @@ class Foe : public GameObject
     Q_OBJECT
 public:
     explicit Foe(GameObject *parent = 0);
-    bool caught;
-    bool angry;
-signals:
+private:
+    bool m_caught;
+    bool m_angry;
+    const int m_escape;
+    int m_escape_ticks;
 
 public slots:
-    void Draw(QPainter *painter);
-    void Fall(QPixmap background,double grav);
+    bool IsAngry() const noexcept;
+    bool IsCaught() const noexcept;
+    void Catch() noexcept;
+    void Escape() noexcept;
+
+    void Draw(QPainter * const painter) const noexcept;
+    void Fall(QPixmap const background, const double grav) noexcept;
 };
 
 #endif // FOE_H

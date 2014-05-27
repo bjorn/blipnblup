@@ -14,13 +14,13 @@
 #include "gamewidget.h"
 #include "player.h"
 #include "bubble.h"
+#include "bubbleaf.h"
+#include "wasp.h"
 
 //CONSTRUCTOR HEAD
 GameWidget::GameWidget() :
 
     background(":/graphics/level2.png"),
-    full_background(),
-    composit(400,300),
 
     ticks(0),
     grav(0.8),
@@ -36,24 +36,24 @@ GameWidget::GameWidget() :
 
 //CONSTRUCTOR BODY
 {
-    full_background = background;
+    setCursor(Qt::BlankCursor);
     setWindowTitle("Blip 'n Blup's Skyward Adventures!");
     //SET INITIAL BUBBLEAF POSITION
-    bubbleaf.x = 100;
-    bubbleaf.y = 50;
+    bubbleaf.SetX(100);
+    bubbleaf.SetY(50);
     //PUSH PLAYER POINTERS INTO A VECTOR
     players.push_back(&blip);
     players.push_back(&blup);
     //SET INITIAL VALUES FOR PLAYERS
     for (uint i = 0; i < players.size(); ++i){
-        players[i]->x = 51 + ( 101*i );
-        players[i]->y = 51 + ( 101*i );
+        players[i]->SetX(51 + ( 101*i ));
+        players[i]->SetY(51 + ( 101*i ));
     }
-    //SPAWN WASPS
+    //SPAWN INITIAL WASPS
     for (int i = 0; i < 1; ++i){
         Wasp * wasp = new Wasp();
-        wasp->x = rand() % 400;
-        wasp->y = rand() % 300;
+        wasp->SetX( rand() % 400 );
+        wasp->SetY( rand() % 300 );
         wasps.push_back(wasp);
     }
     //CREATE TIME
@@ -63,6 +63,7 @@ GameWidget::GameWidget() :
     timer->start();
     //CONSTRUCT SINE LOOKUP VECTOR
     double pi = 3.141592653;
+
     for (int i = 0; i < 512; ++i){
         double val = sin((i/512.0)*2.0*pi);
         sine.push_back(val);
@@ -74,28 +75,40 @@ GameWidget::GameWidget() :
 //ON EVERY TIMER SIGNAL
 void GameWidget::OnTimer()
 {
+    QPixmap full_background = background;
+    QPainter background_painter(&full_background);
+    //DRAW BUBBLEAF
+    bubbleaf.Draw(&background_painter);
+
     //EXECUTE PLAYER FUNCTIONS
     for (uint i = 0; i < players.size(); ++i){
         players[i]->Wrap();
         players[i]->ApplyKeys();
         players[i]->Fall(full_background, grav);
         players[i]->ApplyMovement(background);
+        players[i]->Charge();
     }
     //EXECUTE WASP FUNCTIONS
     for (uint i = 0; i < wasps.size(); ++i){
         wasps[i]->Wrap();
-        if (wasps[i]->caught) wasps[i]->Fall(full_background, grav);
+        wasps[i]->Escape();
+        if (wasps[i]->IsCaught()) {
+            wasps[i]->Fall(full_background, grav);
+        }
         wasps[i]->ApplyMovement(ticks, sine);
         //WASP PLAYER INTERACTION
         for (uint j = 0; j < players.size(); ++j){
             if (wasps[i]->Distance(players[j]) < 23){
-                if (!players[j]->dead && !wasps[i]->caught){
-                    players[j]->dead = true;
-                    players[j]->y_speed = -3;
+                if (players[j]->IsAlive() && !wasps[i]->IsCaught()){
+                    players[j]->Kill();
+                    players[j]->SetYSpeed(-3);
                 }
             }
         }
     }
+    //Removing bubbles causes crash if the same bubble later tries to interact with another object
+    //Solution: Use smart pointers
+
     //EXECUTE BUBBLE FUNCTIONS
     for (uint i = 0; i < bubbles.size(); ++i){
         bubbles[i]->Wrap();
@@ -103,38 +116,36 @@ void GameWidget::OnTimer()
         //BUBBLE BUBBLEAF INTERACTION
         Bubbleaf * bubbleaf_ptr = &bubbleaf;
         if (bubbles[i]->Distance(bubbleaf_ptr) < 23){
-            bubbleaf.x_speed += bubbles[i]->x_speed/20.0;
+            bubbleaf.SetXSpeed( bubbleaf.GetXSpeed()+(bubbles[i]->GetXSpeed()/20) );
         }
         //AGE AND REMOVE
-      ++bubbles[i]->age;
-        if (bubbles[i]->age > 201-(bubbles[i]->randomizer / 128)){
+        if (bubbles[i]->Age()){
             std::swap(bubbles[bubbles.size()-1], bubbles[i]);
             delete bubbles[bubbles.size()-1];
             bubbles.pop_back();
         }
         //BUBBLE WASP INTERACTION
         for (uint j = 0; j < wasps.size(); ++j){
-            if (abs(bubbles[i]->x_speed) > 2 && bubbles[i]->Distance(wasps[j]) < 23){
-                if (!wasps[j]->caught){
+            if (abs(bubbles[i]->GetXSpeed()) > 2 && bubbles[i]->Distance(wasps[j]) < 23){
+                if (!wasps[j]->IsCaught()){
                     //CATCH WASP
-                    wasps[j]->caught = true;
+                    wasps[j]->Catch();
                     //REMOVE BUBBLE
                     std::swap(bubbles[bubbles.size()-1], bubbles[i]);
                     delete bubbles[bubbles.size()-1];
                     bubbles.pop_back();
                 }
-                if (wasps[j]->caught){
-                    wasps[j]->x_speed += bubbles[i]->x_speed/20.0;
+                if (wasps[j]->IsCaught()){
+                    wasps[j]->SetXSpeed(wasps[j]->GetXSpeed() + (bubbles[i]->GetXSpeed()/20.0) );
                 }
             }
         }
-        //REVIVE
+        //REVIVE PLAYERS
         for (uint j = 0; j < players.size(); ++j){
             if (bubbles[i]->Distance(players[j]) < 23){
-                if (players[j]->dead){
+                if (!players[j]->IsAlive()){
                     //REVIVE PLAYER
-                    players[j]->dead = false;
-                    players[j]->y_speed = -3;
+                    players[j]->Revive();
                     //REMOVE BUBBLE
                     std::swap(bubbles[bubbles.size()-1], bubbles[i]);
                     delete bubbles[bubbles.size()-1];
@@ -147,7 +158,7 @@ void GameWidget::OnTimer()
     bubbleaf.ApplyMovement(ticks, sine);
     bubbleaf.Wrap();
     //GAME OVER
-    if (players[0]->dead && players[1]->dead && wasps.size() < 99 && !(ticks%(10-(wasps.size()/10))) ){
+    if (!players[0]->IsAlive() && !players[1]->IsAlive() && wasps.size() < 99 && !(ticks%(10-(wasps.size()/10))) ){
         Wasp*wasp = new Wasp();
         wasps.push_back(wasp);
     }
@@ -155,22 +166,16 @@ void GameWidget::OnTimer()
     this->repaint();
     //PASS TIME
     ++ticks;
-    ++players[0]->charge;
-    ++players[1]->charge;
 }
 
 
 //ON EVERY REPAINT
 void GameWidget::paintEvent(QPaintEvent *)
 {
-    QPainter background_painter(&full_background);
-    //DRAW BACKGROUND
-    background_painter.drawPixmap(0, 0, background.width(), background.height(), background);
-    //DRAW BUBBLEAF
-    bubbleaf.Draw(&background_painter);
-
+    QPixmap composit = background;
     QPainter compositor(&composit);
-    compositor.drawPixmap(0, 0, full_background.width(), full_background.height(), full_background);
+    //DRAW BUBBLEAF
+    bubbleaf.Draw(&compositor);
     //DRAW PLAYERS
     for(uint i = 0; i < players.size(); ++i) players[i]->Draw(&compositor);
     //DRAW WASPS
@@ -188,16 +193,16 @@ void GameWidget::keyPressEvent(QKeyEvent *e)
 {
     switch (e->key()){
         //BLIP KEYS PRESS CHECK
-        case Qt::Key_Up     : players[0]->pressed_up    = true;       break;
-        case Qt::Key_Left   : players[0]->pressed_left  = true;       break;
-        case Qt::Key_Right  : players[0]->pressed_right = true;       break;
-        case Qt::Key_Control: if (!players[0]->dead && players[0]->charge > players[0]->fullcharge) bubbles.push_back(players[0]->Shoot()); break;
+        case Qt::Key_Up     : players[0]->SetUp(true);    break;
+        case Qt::Key_Left   : players[0]->SetLeft(true);  break;
+        case Qt::Key_Right  : players[0]->SetRight(true); break;
+        case Qt::Key_Control: if (players[0]->IsAlive() && players[0]->IsCharged()) bubbles.push_back(players[0]->Shoot()); break;
 
         //BLUP KEYS PRESS CHECK
-        case Qt::Key_W      : players[1]->pressed_up    = true;       break;
-        case Qt::Key_A      : players[1]->pressed_left  = true;       break;
-        case Qt::Key_D      : players[1]->pressed_right = true;       break;
-        case Qt::Key_Space  : if (!players[1]->dead && players[1]->charge > players[1]->fullcharge) bubbles.push_back(players[1]->Shoot()); break;
+        case Qt::Key_W      : players[1]->SetUp(true);    break;
+        case Qt::Key_A      : players[1]->SetLeft(true);  break;
+        case Qt::Key_D      : players[1]->SetRight(true); break;
+        case Qt::Key_Space  : if (players[1]->IsAlive() && players[1]->IsCharged()) bubbles.push_back(players[1]->Shoot()); break;
 
         //SPAWN WASPS (1)
         case Qt::Key_1      : {Wasp*wasp = new Wasp();
@@ -213,13 +218,13 @@ void GameWidget::keyReleaseEvent(QKeyEvent *e)
 {
     switch (e->key()){
         //BLIP KEYS RELEASE CHECK
-        case Qt::Key_Up : blip.pressed_up = false; break;
-        case Qt::Key_Left : blip.pressed_left = false; break;
-        case Qt::Key_Right : blip.pressed_right = false; break;
+        case Qt::Key_Up    : players[0]->SetUp(false); break;
+        case Qt::Key_Left  : players[0]->SetLeft(false); break;
+        case Qt::Key_Right : players[0]->SetRight(false); break;
         //BLUP KEYS RELEASE CHECK
-        case Qt::Key_W : blup.pressed_up = false; break;
-        case Qt::Key_A : blup.pressed_left = false; break;
-        case Qt::Key_D : blup.pressed_right = false; break;
+        case Qt::Key_W : players[1]->SetUp(false); break;
+        case Qt::Key_A : players[1]->SetLeft(false); break;
+        case Qt::Key_D : players[1]->SetRight(false); break;
         default : break;
     }
 }

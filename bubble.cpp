@@ -7,42 +7,51 @@
 
 Bubble::Bubble(GameObject *parent) :
     GameObject(parent, ":/graphics/bubble.png"),
-    age(0)
+    m_age(0)
 {
+
+}
+
+//AGE BUBBLE AND RETURN TRUE ON OLD
+bool Bubble::Age() noexcept{
+    ++m_age;
+    if (m_age > 201-(Randomize() / 128) ) return true;
+    else return false;
 }
 
 //MOVE BUBBLE
-void Bubble::ApplyMovement(long ticks, std::vector<double> sine)
+void Bubble::ApplyMovement(long ticks, const std::vector<double>& sine) noexcept
 {
-    if (y_speed > -2.5) y_speed -= 0.05;
-    x_speed *= 0.96;
+    if ( GetYSpeed() > -2.5 ){ SetYSpeed( GetYSpeed() - 0.05 );}
+    SetXSpeed(GetXSpeed() * 0.96);
 
-    int phase = floor(3*ticks+randomizer);
-    x += x_speed + sine[phase%512];
-    y += y_speed;
+    int phase = floor( 3 * ticks + Randomize() );
+    SetX( GetX() + GetXSpeed() + sine[phase%512] );
+    SetY( GetY() + GetYSpeed() );
 }
 
 //DRAW BUBBLE
-void Bubble::Draw(QPainter *painter, long ticks, std::vector<double> sine)
+void Bubble::Draw(QPainter * const painter, const int ticks, const std::vector<double>& sine) noexcept
 {
-    int phase = 3*ticks+randomizer;
-    const double width  = sprite.width() - abs(x_speed)/2 + (2*sine[phase%512]);
-    const double height = sprite.height()+ abs(x_speed)/4 + (2*sine[phase%512]);
-    const double dx = (sprite.width()-width)/2.0;
-    const double dy = (sprite.height()-height)/2.0;
-    hit_dx = (sprite.width()+dx)/2.0;
-    hit_dy = (sprite.height()+dy)/2.0;
+    int phase = 3 * ticks + Randomize();
+    QImage sprite = GetSprite(0);
+    const double width  = sprite.width()  - abs(GetXSpeed())/2 + (2*sine[phase%512]);
+    const double height = sprite.height() + abs(GetXSpeed())/4 + (2*sine[phase%512]);
+    const double dx = (sprite.width()  - width)  / 2.0;
+    const double dy = (sprite.height() - height) / 2.0;
+    SetHitdX( (sprite.width()  + dx) / 2.0 );
+    SetHitdY( (sprite.height() + dy) / 2.0 );
 
-    QPixmap flip = QPixmap::fromImage(sprite.mirrored(!facing_right, false));
-    painter->drawPixmap( x+dx, y+dy, width, height, flip);
+    QPixmap flip = QPixmap::fromImage(sprite.mirrored(!IsFacingRight(), false));
+    painter->drawPixmap( GetX()+dx, GetY()+dy, width, height, flip);
     //WRAPPING
-    if( x <   0)          painter->drawPixmap(x+dx+400, y+dy    , width, height, flip);
-    if( x > 400 - width)  painter->drawPixmap(x+dx-400, y+dy    , width, height, flip);
-    if( y <   0)          painter->drawPixmap(x+dx    , y+dy+300, width, height, flip);
-    if( y > 300 - height) painter->drawPixmap(x+dx    , y+dy-300, width, height, flip);
+    if( GetX() <   0)          painter->drawPixmap( GetX() + dx + 400, GetY() + dy      , width, height, flip);
+    if( GetX() > 400 - width)  painter->drawPixmap( GetX() + dx - 400, GetY() + dy      , width, height, flip);
+    if( GetY() <   0)          painter->drawPixmap( GetX() + dx      , GetY() + dy + 300, width, height, flip);
+    if( GetY() > 300 - height) painter->drawPixmap( GetX() + dx      , GetY() + dy - 300, width, height, flip);
 
-    if(x <   0         && y <   0)          painter->drawPixmap(x+dx+400, y+dy+300, width, height, flip);
-    if(x > 400 - width && y <   0)          painter->drawPixmap(x+dx-400, y+dy+300, width, height, flip);
-    if(x > 400 - width && y > 300 - height) painter->drawPixmap(x+dx-400, y+dy-300, width, height, flip);
-    if(x <   0         && y > 300 - height) painter->drawPixmap(x+dx+400, y+dy-300, width, height, flip);
+    if( GetX() <   0         && GetY() <   0)          painter->drawPixmap( GetX() + dx + 400, GetY() + dy + 300, width, height, flip);
+    if( GetX() > 400 - width && GetY() <   0)          painter->drawPixmap( GetX() + dx - 400, GetY() + dy + 300, width, height, flip);
+    if( GetX() > 400 - width && GetY() > 300 - height) painter->drawPixmap( GetX() + dx - 400, GetY() + dy - 300, width, height, flip);
+    if( GetX() <   0         && GetY() > 300 - height) painter->drawPixmap( GetX() + dx + 400, GetY() + dy - 300, width, height, flip);
 }

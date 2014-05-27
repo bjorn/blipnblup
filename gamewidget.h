@@ -6,26 +6,26 @@
 #include "player.h"
 #include "bubbleaf.h"
 
+struct Player;
 struct Wasp;
-struct Bubble;
+
 
 class GameWidget : public QWidget
 {
     Q_OBJECT
 public:
     GameWidget();
+public slots:
     void keyPressEvent(QKeyEvent *);
     void keyReleaseEvent(QKeyEvent *);
     void paintEvent(QPaintEvent *);
 private:
-    //GLOBAL PIXMAPS
-    QPixmap background;
-    QPixmap full_background;
-    QPixmap composit;
+    //PIXMAPS
+    const QPixmap background;
 
     //GENERAL MEMBER VALUES
-    long    ticks;
-    double  grav;
+    long            ticks;
+    const double    grav;
 
     //PLAYERS
     Player  blip;
@@ -36,6 +36,7 @@ private:
 
     //VECTORS
     std::vector<double>  sine;
+
     std::vector<Player*> players;
     std::vector<Bubble*> bubbles;
     std::vector<Wasp*>   wasps;

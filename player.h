@@ -10,18 +10,26 @@ class Player : public GameObject
 public:
     explicit Player(GameObject *parent = 0, const char *img_path = ":/graphics/blup.png");
 
-    bool pressed_up;
-    bool pressed_left;
-    bool pressed_right;
-    bool pressed_down;
+    bool GetUp()    const;
+    bool GetLeft()  const;
+    bool GetRight() const;
+    bool GetDown()  const;
 
-public slots:
+    void SetUp(bool state);
+    void SetLeft(bool state);
+    void SetRight(bool state);
+    void SetDown(bool state);
+
     void ApplyKeys();
-    void ApplyMovement(QPixmap background);
+    void ApplyMovement(const QPixmap& background);
     Bubble * Shoot();
 
 private:
-    int  jump;
+    bool m_pressed_up;
+    bool m_pressed_left;
+    bool m_pressed_right;
+    bool m_pressed_down;
+    int  m_jump;
 };
 
 #endif // PLAYER_H

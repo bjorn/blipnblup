@@ -4,23 +4,33 @@
 
 Player::Player(GameObject *parent, const char *img_path) :
     GameObject(parent, img_path),
-    pressed_up(false),
-    pressed_left(false),
-    pressed_right(false),
-    pressed_down(false),
-    jump(12)
+    m_pressed_up(false),
+    m_pressed_left(false),
+    m_pressed_right(false),
+    m_pressed_down(false),
+    m_jump(12)
 {
 }
+
+bool Player::GetUp()    const   {return m_pressed_up;}
+bool Player::GetLeft()  const   {return m_pressed_left;}
+bool Player::GetRight() const   {return m_pressed_right;}
+bool Player::GetDown()  const   {return m_pressed_down;}
+
+void Player::SetUp(bool state)    {m_pressed_up    = state;}
+void Player::SetLeft(bool state)  {m_pressed_left  = state;}
+void Player::SetRight(bool state) {m_pressed_right = state;}
+void Player::SetDown(bool state)  {m_pressed_down  = state;}
 
 //SHOOT BUBBLE
 Bubble * Player::Shoot()
 {
-    charge = 0;
+    ResetCharge();
     Bubble * bubble = new Bubble(this);
-    bubble->x = x;
-    bubble->y = y;
-    bubble->y_speed = 0;
-    bubble->x_speed = (10*(-1+2*facing_right))+(3*pressed_right)-(3*pressed_left);
+    bubble->SetX(GetX());
+    bubble->SetY(GetY());
+    bubble->SetYSpeed(0);
+    bubble->SetXSpeed( (10*(-1+2*IsFacingRight() ))+(3*GetRight())-(3*GetLeft()) );
     return bubble;
 }
 
@@ -29,33 +39,34 @@ Bubble * Player::Shoot()
 //APPLY INPUT EFFECTS
 void Player::ApplyKeys()
 {
-    if (!dead){
+    if (IsAlive()){
         //JUMP
-        if (pressed_up && on_ground){
-            on_ground = false;
-            y_speed -= jump;
+        if (GetUp() && IsOnGround()){
+            SetOnGround(false);
+            SetYSpeed(-m_jump);
         }
         //FORCE LEFT
-        if (pressed_left){
-            facing_right = false;
-            if (x_speed > -step) x_speed -= 0.25+(0.75*on_ground);
+        if (GetLeft()){
+            FaceLeft();
+            if (GetXSpeed() > -GetStep()){ SetXSpeed( GetXSpeed() - (0.25 + (0.75*IsOnGround())) );}
         }
         //FORCE RIGHT
-        if (pressed_right){
-            facing_right = true;
-            if (x_speed < step) x_speed += 0.25+(0.75*on_ground);
+        if (GetRight()){
+            FaceRight();
+            if (GetXSpeed() <  GetStep()){ SetXSpeed( GetXSpeed() + (0.25 + (0.75*IsOnGround())) );}
         }
     }
 }
 
 //MOVE PLAYER
-void Player::ApplyMovement(QPixmap background)
+void Player::ApplyMovement(const QPixmap& background)
 {
+    QImage sprite = GetSprite(0);
+    int check_x = (GetX()+(sprite.width()/2));
+    int check_y = (GetY()+sprite.height()-4);
     //COLLISION DETECTION TO THE LEFT
-    if (x_speed < 0){
-        int check_x = (x+(sprite.width()/2));
-        int check_y = (y+(sprite.height())-4);
-        for(int i = 0; i < -x_speed; ++i){
+    if (GetXSpeed() < 0){
+        for(int i = 0; i < -GetXSpeed(); ++i){
             if (--check_x < 0) check_x += 400;
             if (check_x > 399) check_x -= 400;
             if (--check_y < 0) check_y += 300;
@@ -63,17 +74,15 @@ void Player::ApplyMovement(QPixmap background)
             const QRgb sidepixel = background.toImage().pixel(check_x, check_y);
             const int red = qRed(sidepixel);
             if ((!red % 2)){
-                x -= i;
-                x_speed = 0;
+                SetX(GetX()-i);
+                SetXSpeed(0);
             }
         }
     }
 
     //COLLISION DETECTION TO THE RIGHT
-    if (x_speed > 0){
-        int check_x = (x+(sprite.width()/2));
-        int check_y = (y+(sprite.height())-4);
-        for(int i = 0; i < x_speed; ++i){
+    if (GetXSpeed() > 0){
+        for(int i = 0; i < GetXSpeed(); ++i){
             if (++check_x < 0) check_x += 400;
             if (check_x > 399) check_x -= 400;
             if (--check_y < 0) check_y += 300;
@@ -81,15 +90,15 @@ void Player::ApplyMovement(QPixmap background)
             const QRgb sidepixel = background.toImage().pixel(check_x, check_y);
             const int red = qRed(sidepixel);
             if ((!red % 2)){
-                x += i;
-                x_speed = 0;
+                SetX(GetX()+i);
+                SetXSpeed(0);
             }
         }
     }
 
-    x += x_speed;
-    y += y_speed;
+    SetX(GetX()+GetXSpeed());
+    SetY(GetY()+GetYSpeed());
 
     //SLOW DOWN
-    if (on_ground) x_speed *= 0.7;
+    if (IsOnGround()){ SetXSpeed(GetXSpeed() * 0.7); }
 }

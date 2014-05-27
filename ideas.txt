@@ -1,4 +1,34 @@
-- Football
-- Levels
+- Adventure Levels and Worlds:
+    * Beach
+    * Jungle
+    * "Loofbos"
+    * "Naaldbos"
+    * Snow
+    * Lost temple
+    * Volcano
+    * Spaceship
 - Alien boss
-- Angry creatures on bubble escape
+- Multiplayer Gamemodes:
+    * Capture the flag (pushing flag bubble)
+    * Football
+    * Collector
+    * Survival (waves of creatures)
+= Angry creatures on bubble escape
+    @ Anger as double with cooldown  <---
+- Seperate collision image to allow: <--
+    * Moving platforms               <-
+    * Slopes                         <
+    * Slippery surfaces
+    * Wind
+    * Hazards
+
+Mandelbulb 3D Fractal backgrounds
+
+Goal
+
+Controller support
+
+Inspiration:
+Bubble Bobble
+Super Mario Wars
+Golf
