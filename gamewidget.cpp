@@ -193,16 +193,20 @@ void GameWidget::keyPressEvent(QKeyEvent *e)
 {
     switch (e->key()){
         //BLIP KEYS PRESS CHECK
-        case Qt::Key_Up     : players[0]->SetUp(true);    break;
-        case Qt::Key_Left   : players[0]->SetLeft(true);  break;
-        case Qt::Key_Right  : players[0]->SetRight(true); break;
-        case Qt::Key_Control: if (players[0]->IsAlive() && players[0]->IsCharged()) bubbles.push_back(players[0]->Shoot()); break;
+        case Qt::Key_Up     : players[0]->SetUp(true);      break;
+        case Qt::Key_Left   : players[0]->SetLeft(true);    break;
+        case Qt::Key_Right  : players[0]->SetRight(true);   break;
+        case Qt::Key_Control:   if (players[0]->IsAlive() && players[0]->IsCharged()){
+                                    bubbles.push_back(players[0]->Shoot());
+                                }                           break;
 
         //BLUP KEYS PRESS CHECK
-        case Qt::Key_W      : players[1]->SetUp(true);    break;
-        case Qt::Key_A      : players[1]->SetLeft(true);  break;
-        case Qt::Key_D      : players[1]->SetRight(true); break;
-        case Qt::Key_Space  : if (players[1]->IsAlive() && players[1]->IsCharged()) bubbles.push_back(players[1]->Shoot()); break;
+        case Qt::Key_W      : players[1]->SetUp(true);      break;
+        case Qt::Key_A      : players[1]->SetLeft(true);    break;
+        case Qt::Key_D      : players[1]->SetRight(true);   break;
+        case Qt::Key_Space  :   if (players[1]->IsAlive() && players[1]->IsCharged()){
+                                    bubbles.push_back(players[1]->Shoot());
+                                }                           break;
 
         //SPAWN WASPS (1)
         case Qt::Key_1      : {Wasp*wasp = new Wasp();

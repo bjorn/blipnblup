@@ -19,8 +19,8 @@ public slots:
     void Catch() noexcept;
     void Escape() noexcept;
 
-    void Draw(QPainter * const painter) const noexcept;
     void Fall(QPixmap const background, const double grav) noexcept;
+    void Draw(QPainter * const painter) const noexcept;
 };
 
 #endif // FOE_H

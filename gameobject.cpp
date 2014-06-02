@@ -18,10 +18,10 @@ GameObject::GameObject(QObject *parent, const char *img_path) :
     m_rot(0.0),
     m_rot_speed(0.0),
 
+    m_step(3),
     m_dead(false),
     m_on_ground(false),
-    m_facing_right(true),
-    m_step(3)
+    m_facing_right(true)
 {
     m_sprites.push_back(m_sprite);
     m_hit_dx = m_sprite.width() /2;
@@ -29,46 +29,46 @@ GameObject::GameObject(QObject *parent, const char *img_path) :
 }
 
 //SIMPLE FUNCTIONS
-void    GameObject::SetX(const double x) {m_x = x;}
-double  GameObject::GetX() const         {return m_x;}
-void    GameObject::SetY(const double y) {m_y = y;}
-double  GameObject::GetY() const         {return m_y;}
+void    GameObject::SetX(const double x) noexcept   {m_x = x;}
+double  GameObject::GetX() const noexcept           {return m_x;}
+void    GameObject::SetY(const double y) noexcept   {m_y = y;}
+double  GameObject::GetY() const noexcept           {return m_y;}
 
-void    GameObject::SetHitdX(const double hit_dx)   {m_hit_dx = hit_dx;}
-double  GameObject::GetHitdX() const                {return m_hit_dx;}
-void    GameObject::SetHitdY(const double hit_dy)   {m_hit_dy = hit_dy;}
-double  GameObject::GetHitdY() const                {return m_hit_dy;}
+void    GameObject::SetHitdX(const double hit_dx) noexcept      {m_hit_dx = hit_dx;}
+double  GameObject::GetHitdX() const noexcept                   {return m_hit_dx;}
+void    GameObject::SetHitdY(const double hit_dy) noexcept      {m_hit_dy = hit_dy;}
+double  GameObject::GetHitdY() const noexcept                   {return m_hit_dy;}
 
-void    GameObject::SetXSpeed(const double x_speed) {m_x_speed = x_speed;}
-double  GameObject::GetXSpeed() const               {return m_x_speed;}
-void    GameObject::SetYSpeed(const double y_speed) {m_y_speed = y_speed;}
-double  GameObject::GetYSpeed() const               {return m_y_speed;}
+void    GameObject::SetXSpeed(const double x_speed) noexcept    {m_x_speed = x_speed;}
+double  GameObject::GetXSpeed() const noexcept                  {return m_x_speed;}
+void    GameObject::SetYSpeed(const double y_speed) noexcept    {m_y_speed = y_speed;}
+double  GameObject::GetYSpeed() const noexcept                  {return m_y_speed;}
 
-void    GameObject::SetRotation(const double rot)       {m_rot = rot;}
-double  GameObject::GetRotation() const                 {return m_rot;}
-void    GameObject::SetRotSpeed(const double rot_speed) {m_rot_speed = rot_speed;}
-double  GameObject::GetRotSpeed() const                 {return m_rot_speed;}
+void    GameObject::SetRotation(const double rot) noexcept          {m_rot = rot;}
+double  GameObject::GetRotation() const noexcept                    {return m_rot;}
+void    GameObject::SetRotSpeed(const double rot_speed) noexcept    {m_rot_speed = rot_speed;}
+double  GameObject::GetRotSpeed() const noexcept                    {return m_rot_speed;}
 
-int     GameObject::GetStep() const                 {return m_step;}
-int     GameObject::GetMaxYSpeed() const            {return m_max_y_speed;}
-int     GameObject::Randomize() const               {return m_randomizer;}
-void    GameObject::Kill()                          {m_dead = true;  m_y_speed = -3;}
-void    GameObject::Revive()                        {m_dead = false; m_y_speed = -3;}
-bool    GameObject::IsAlive()   const               {return !m_dead;}
-void    GameObject::Charge()                        {++m_charge;}
-void    GameObject::ResetCharge()                   {m_charge = 0;}
-bool    GameObject::IsCharged() const               {if (m_charge > m_fullcharge) return true;}
-void    GameObject::FaceLeft()                      {m_facing_right = false;}
-void    GameObject::FaceRight()                     {m_facing_right = true;}
-bool    GameObject::IsFacingRight() const           {return m_facing_right;}
-void    GameObject::SetOnGround(const bool state)   {m_on_ground = state;}
-bool    GameObject::IsOnGround() const              {return m_on_ground;}
+int     GameObject::GetStep() const noexcept                {return m_step;}
+int     GameObject::GetMaxYSpeed() const noexcept           {return m_max_y_speed;}
+int     GameObject::Randomize() const noexcept              {return m_randomizer;}
+void    GameObject::Kill() noexcept                         {m_dead = true;  m_y_speed = -3;}
+void    GameObject::Revive() noexcept                       {m_dead = false; m_y_speed = -3;}
+bool    GameObject::IsAlive() const noexcept                {return !m_dead;}
+void    GameObject::Charge() noexcept                       {++m_charge;}
+void    GameObject::ResetCharge() noexcept                  {m_charge = 0;}
+bool    GameObject::IsCharged() const noexcept              {return  m_charge > m_charged;}
+void    GameObject::FaceLeft() noexcept                     {m_facing_right = false;}
+void    GameObject::FaceRight() noexcept                    {m_facing_right = true;}
+bool    GameObject::IsFacingRight() const noexcept          {return m_facing_right;}
+void    GameObject::SetOnGround(const bool state) noexcept  {m_on_ground = state;}
+bool    GameObject::IsOnGround() const noexcept             {return m_on_ground;}
 
-void    GameObject::AddSprite(const QImage sprite)        {m_sprites.push_back(sprite);}
-QImage  GameObject::GetSprite(const int sprite_index) const {return m_sprites[sprite_index];}
+void    GameObject::AddSprite(const QImage sprite) noexcept             {m_sprites.push_back(sprite);}
+QImage  GameObject::GetSprite(const int sprite_index) const noexcept    {return m_sprites[sprite_index];}
 
 //CHECK DISTANCE BETWEEN TWO GAMEOBJECTS
-double GameObject::Distance(const GameObject * const other) const
+double GameObject::Distance(const GameObject * const other) const noexcept
 {
     int dx, dy;
     dx = (other->GetX() + other->GetHitdX()) - (GetX() + GetHitdX());
@@ -79,7 +79,7 @@ double GameObject::Distance(const GameObject * const other) const
 }
 
 //DOWNWARD PIXEL COLLITION
-void GameObject::Fall(const QPixmap& background,const double grav)
+void GameObject::Fall(const QPixmap& background,const double grav) noexcept
 {
     int check_x = (m_x+(m_sprite.width()/2));
     check_x = check_x%400;
@@ -111,7 +111,7 @@ void GameObject::Fall(const QPixmap& background,const double grav)
 
 
 //APPLY MOVEMENT
-void GameObject::ApplyMovement()
+void GameObject::ApplyMovement() noexcept
 {
     m_x += m_x_speed;
     m_y += m_y_speed;
@@ -119,7 +119,7 @@ void GameObject::ApplyMovement()
 
 
 //POSITION WRAPPING
-void GameObject::Wrap()
+void GameObject::Wrap() noexcept
 {
     if( m_x <  0)                    m_x = 400; //LEFT TO RIGHT
     if( m_x > 400)                   m_x =   0; //RIGHT TO LEFT
@@ -128,7 +128,7 @@ void GameObject::Wrap()
 }
 
 //DRAW GAMEOBJECT
-void GameObject::Draw(QPainter * painter)
+void GameObject::Draw(QPainter * painter) noexcept
 {
     QTransform matrix;
     matrix.scale(1-(2*!m_facing_right), 1);

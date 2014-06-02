@@ -8,5 +8,6 @@
         <file>graphics/spider.png</file>
         <file>graphics/wasp_caught.png</file>
         <file>graphics/bubbleaf.png</file>
+        <file>graphics/level3.png</file>
     </qresource>
 </RCC>

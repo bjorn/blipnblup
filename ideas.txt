@@ -13,7 +13,7 @@
     * Football
     * Collector
     * Survival (waves of creatures)
-= Angry creatures on bubble escape
++ Angry creatures on bubble escape
     @ Anger as double with cooldown  <---
 - Seperate collision image to allow: <--
     * Moving platforms               <-
@@ -22,7 +22,7 @@
     * Wind
     * Hazards
 
-Mandelbulb 3D Fractal backgrounds
+Mandelbulb 3D Fractal backgrounds? For bonus levels?
 
 Goal
 
@@ -30,5 +30,5 @@ Controller support
 
 Inspiration:
 Bubble Bobble
-Super Mario Wars
+Super Mario War
 Golf
