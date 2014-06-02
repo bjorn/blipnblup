@@ -38,3 +38,7 @@ RESOURCES += \
 
 OTHER_FILES += \
     ideas.txt
+
+#For profiling
+QMAKE_CXXFLAGS_DEBUG += -pg
+QMAKE_LFLAGS_DEBUG += -pg
