@@ -1,11 +1,18 @@
 #include "wasp.h"
 #include <cmath>
 
-Wasp::Wasp(Foe *parent) :
-    Foe(parent)
+Wasp::Wasp() :
+    Foe()
 {
-    QImage sprite_caught = QImage(":/graphics/wasp_caught.png");
-    AddSprite(sprite_caught);
+    SetWidth(42);
+    SetHeight(42);
+    int sprite_size = 84;
+    QImage waspImage = QImage(":/graphics/wasp.png");
+    for (int i = 0; i < (waspImage.width()/sprite_size); i++){
+        AddSprite(waspImage.copy(
+                      i*sprite_size, IsAngry()*sprite_size,
+                      sprite_size, sprite_size));
+    }
 }
 
 //MOVE WASP
@@ -22,6 +29,7 @@ void Wasp::ApplyMovement(const int ticks, const std::vector<double>& sine)
         if (GetXSpeed() > 0){ FaceRight(); }
         if (GetXSpeed() < 0){ FaceLeft();  }
     }
+    else SetCurrentFrame(GetSpritesAmount()-1);
     if (IsOnGround()){
         SetXSpeed( GetXSpeed() * 0.97 );
         SetRotSpeed( 3 * GetXSpeed() );
@@ -29,4 +37,14 @@ void Wasp::ApplyMovement(const int ticks, const std::vector<double>& sine)
     SetX(GetX()+GetXSpeed());
     SetY(GetY()+GetYSpeed());
     SetRotation(GetRotation()+GetRotSpeed());
+}
+
+void Wasp::Animate() noexcept{
+    if (!IsCaught()) m_frame_progression += 0.5;
+    if (m_frame_progression > 1){
+        m_frame_progression = 0;
+        int next_frame = GetCurrentFrame()+1;
+        if (next_frame > 1) next_frame = 0;
+        SetCurrentFrame(next_frame);
+    }
 }

@@ -8,5 +8,7 @@
         <file>graphics/spider.png</file>
         <file>graphics/wasp_caught.png</file>
         <file>graphics/bubbleaf.png</file>
+        <file>graphics/blipnblup.png</file>
+        <file>graphics/bubbles.png</file>
     </qresource>
 </RCC>

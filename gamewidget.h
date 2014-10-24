@@ -1,7 +1,7 @@
 #ifndef GAMEWIDGET_H
 #define GAMEWIDGET_H
 
-#include <QWidget>
+#include <QGLWidget>
 
 #include "player.h"
 #include "bubbleaf.h"
@@ -10,7 +10,7 @@ struct Player;
 struct Wasp;
 
 
-class GameWidget : public QWidget
+class GameWidget : public QGLWidget
 {
     Q_OBJECT
 public:

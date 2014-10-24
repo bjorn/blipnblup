@@ -6,7 +6,7 @@ class Foe : public GameObject
 {
     Q_OBJECT
 public:
-    explicit Foe(GameObject *parent = 0);
+    explicit Foe();
 private:
     bool m_caught;
     bool m_angry;

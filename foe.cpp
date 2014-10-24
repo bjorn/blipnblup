@@ -1,8 +1,8 @@
 #include "foe.h"
 #include <QPainter>
 
-Foe::Foe(GameObject *parent) :
-    GameObject(parent, ":/graphics/wasp.png"),
+Foe::Foe() :
+    GameObject(),
     m_caught(false),
     m_angry(false),
     m_escape(500),
@@ -39,10 +39,10 @@ void Foe::Escape() noexcept
 //DOWNWARD PIXEL COLLITION
 void Foe::Fall(QPixmap const background,const double grav) noexcept
 {
-    int check_x = (GetX()+(GetSprite(0).width()/2));
-    check_x = check_x%400;
-    int check_y = (GetY()+(GetSprite(0).height())-8);
-    check_y = check_y%300;
+    int check_x = (GetX()+(GetWidth()/2));
+    check_x = check_x%background.width();
+    int check_y = (GetY()+(GetHeight())-8);
+    check_y = check_y%background.height();
     const QRgb floorpixel = background.toImage().pixel( check_x , check_y );
     const int red = qRed(floorpixel);
     if (!(red % 2)){
@@ -52,7 +52,8 @@ void Foe::Fall(QPixmap const background,const double grav) noexcept
 
     if(GetYSpeed() >= 0){
         for(int i = -(GetStep()+1); i <= GetYSpeed(); ++i){
-            const QRgb floorpixel = background.toImage().pixel( check_x , check_y+i );
+            check_y = (check_y+1)%background.height();
+            const QRgb floorpixel = background.toImage().pixel( check_x , check_y);
             const int red = qRed(floorpixel);
             if (red % 2){
                 if (GetYSpeed() > 1 && IsCaught()){ SetYSpeed(-GetYSpeed()/2.0); }
@@ -68,44 +69,105 @@ void Foe::Fall(QPixmap const background,const double grav) noexcept
 //DRAW FOE
 void Foe::Draw(QPainter * painter) const noexcept
 {
+    int device_width = painter->device()->width();
+    int device_height = painter->device()->height();
+    double scale = 0.5;
     QPixmap * bubble = new QPixmap(":/graphics/bubble.png");
     QTransform matrix;
-    matrix.rotate(GetRotation()-90*!IsAlive());
+    matrix.rotate(GetRotation());
     matrix.scale(1-(2*!IsFacingRight()), 1);
-    QPixmap sprite = QPixmap::fromImage(GetSprite(IsCaught()).transformed(matrix));
-    const int width  = sprite.width();
-    const int height = sprite.height();
-    const double dx = -(width - GetSprite(IsCaught()).width())/2;
-    const double dy = -(height - GetSprite(IsCaught()).height())/2;
-    painter->drawPixmap( GetX()+dx, GetY()+dy, width, height, sprite);
-    if (IsCaught()) painter->drawPixmap( GetX(), GetY(), bubble->width(), bubble->height(), *bubble);
+    QImage sprite_o = GetSprite(GetCurrentFrame());
+    QPixmap sprite_t = QPixmap::fromImage( sprite_o.transformed(matrix) );
+    const int width  = sprite_t.width()*scale;
+    const int height = sprite_t.height()*scale;
+    const double dx = -(width - GetSprite(GetCurrentFrame()).width()*scale)*0.5;
+    const double dy = -(height - GetSprite(GetCurrentFrame()).height()*scale)*0.5;
+    const double bubble_dx = (GetWidth() - bubble->width())/2;
+    const double bubble_dy = (GetHeight() - bubble->height())/2;
+    //DRAW FOE
+    painter->drawPixmap(
+                GetX()+dx, GetY()+dy,
+                width, height,
+                sprite_t);
+    //DRAW BUBBLE
+    if (IsCaught()) painter->drawPixmap(
+                GetX()+bubble_dx, GetY()+bubble_dy,
+                bubble->width(), bubble->height(),
+                *bubble);
     //SPRITE WRAPPING
     //LEFT RIGHT
-    if( GetX() <   0){ painter->drawPixmap(GetX()+dx+400, GetY()+dy    , width, height, sprite);
-        if (IsCaught()) painter->drawPixmap( GetX()+400, GetY(), bubble->width(), bubble->height(), *bubble);
+    if( GetX() < 0){ painter->drawPixmap(
+                    GetX()+dx+device_width, GetY()+dy,
+                    width, height,
+                    sprite_t);
+        if (IsCaught()) painter->drawPixmap(
+                        GetX()+bubble_dx+device_width, GetY()+bubble_dy,
+                        bubble->width(), bubble->height(),
+                        *bubble);
     }
-    if( GetX() > 400 - width){  painter->drawPixmap(GetX()+dx-400, GetY()+dy    , width, height, sprite);
-        if (IsCaught()) painter->drawPixmap( GetX()-400, GetY(), bubble->width(), bubble->height(), *bubble);
+    if( GetX() > device_width - width){ painter->drawPixmap(
+                    GetX()+dx-device_width, GetY()+dy,
+                    width, height,
+                    sprite_t);
+        if (IsCaught()) painter->drawPixmap(
+                        GetX()+bubble_dx-device_width, GetY()+bubble_dy,
+                        bubble->width(), bubble->height(),
+                        *bubble);
     }
     //TOP BOTTOM
-    if( GetY() <   0){          painter->drawPixmap(GetX()+dx    , GetY()+dy+300, width, height, sprite);
-        if (IsCaught()) painter->drawPixmap( GetX(), GetY()+300, bubble->width(), bubble->height(), *bubble);
+    if( GetY() < 0){ painter->drawPixmap(
+                    GetX()+dx    , GetY()+dy+device_height,
+                    width, height,
+                    sprite_t);
+        if (IsCaught()) painter->drawPixmap(
+                        GetX()+bubble_dx, GetY()+bubble_dy+device_height,
+                        bubble->width(), bubble->height(),
+                        *bubble);
     }
-    if( GetY() > 300 - height){ painter->drawPixmap(GetX()+dx    , GetY()+dy-300, width, height, sprite);
-        if (IsCaught()) painter->drawPixmap( GetX(), GetY()-300, bubble->width(), bubble->height(), *bubble);
+    if( GetY() > device_height - height){ painter->drawPixmap(
+                    GetX()+dx, GetY()+dy-device_height,
+                    width, height,
+                    sprite_t);
+        if (IsCaught()) painter->drawPixmap(
+                        GetX()+bubble_dx, GetY()+bubble_dy-device_height,
+                        bubble->width(), bubble->height(),
+                        *bubble);
     }
     //CORNERS
-    if(GetX() <   0         && GetY() <   0){          painter->drawPixmap(GetX()+dx+400, GetY()+dy+300, width, height, sprite);
-        if (IsCaught()) painter->drawPixmap( GetX()+400, GetY()+300, bubble->width(), bubble->height(), *bubble);
+    if(GetX() < 0 && GetY() < 0){ painter->drawPixmap(
+                    GetX()+dx+device_width, GetY()+dy+device_height,
+                    width, height,
+                    sprite_t);
+        if (IsCaught()) painter->drawPixmap(
+                        GetX()+bubble_dx+device_width, GetY()+bubble_dy+device_height,
+                        bubble->width(), bubble->height(), *bubble);
     }
-    if(GetX() > 400 - width && GetY() <   0){          painter->drawPixmap(GetX()+dx-400, GetY()+dy+300, width, height, sprite);
-        if (IsCaught()) painter->drawPixmap( GetX()-400, GetY()+300, bubble->width(), bubble->height(), *bubble);
+    if(GetX() > device_width - width && GetY() < 0){ painter->drawPixmap(
+                    GetX()+dx-device_width, GetY()+dy+device_height,
+                    width, height,
+                    sprite_t);
+        if (IsCaught()) painter->drawPixmap(
+                        GetX()+bubble_dx-device_width, GetY()+bubble_dy+device_height,
+                        bubble->width(), bubble->height(),
+                        *bubble);
     }
-    if(GetX() > 400 - width && GetY() > 300 - height){ painter->drawPixmap(GetX()+dx-400, GetY()+dy-300, width, height, sprite);
-        if (IsCaught()) painter->drawPixmap( GetX()-400, GetY()-300, bubble->width(), bubble->height(), *bubble);
+    if(GetX() > device_width - width && GetY() > device_height - height){ painter->drawPixmap(
+                    GetX()+dx-device_width, GetY()+dy-device_height,
+                    width, height,
+                    sprite_t);
+        if (IsCaught()) painter->drawPixmap(
+                        GetX()+bubble_dx-device_width, GetY()+bubble_dy-device_height,
+                        bubble->width(), bubble->height(),
+                        *bubble);
     }
-    if(GetX() <   0         && GetY() > 300 - height){ painter->drawPixmap(GetX()+dx+400, GetY()+dy-300, width, height, sprite);
-        if (IsCaught()) painter->drawPixmap( GetX()+400, GetY()-300, bubble->width(), bubble->height(), *bubble);
+    if(GetX() < 0 && GetY() > device_height - height){ painter->drawPixmap(
+                    GetX()+dx+device_width, GetY()+dy-device_height,
+                    width, height,
+                    sprite_t);
+        if (IsCaught()) painter->drawPixmap(
+                        GetX()+bubble_dx+device_width, GetY()+bubble_dy-device_height,
+                        bubble->width(), bubble->height(),
+                        *bubble);
     }
     delete bubble;
 }

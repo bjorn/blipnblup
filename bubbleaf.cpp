@@ -5,11 +5,19 @@
 
 #include <qdebug.h>
 
-Bubbleaf::Bubbleaf(GameObject *parent) :
-    GameObject(parent, ":/graphics/bubbleaf.png")
+Bubbleaf::Bubbleaf() :
+    GameObject()
 {
-    SetHitdX(89);
-    SetHitdY(15);
+    SetWidth(32*3);
+    SetHeight(32);
+    int sprite_height = 64;
+    SetHitdX(GetWidth()/2);
+    SetHitdY(GetHeight()/2);
+    QImage bubble_image = QImage(":/graphics/bubbles.png");
+    AddSprite(bubble_image.copy(
+                        sprite_height, 0,
+                        sprite_height*3, sprite_height)
+    );
 }
 
 //MOVE BUBBLEAF
@@ -27,16 +35,50 @@ void Bubbleaf::ApplyMovement(const int ticks, const std::vector<double>& sine) n
 //DRAW BUBBLEAF
 void Bubbleaf::Draw(QPainter * const painter) noexcept
 {
+    int device_width = painter->device()->width();
+    int device_height = painter->device()->height();
     QPixmap sprite = QPixmap::fromImage(GetSprite(0));
-    painter->drawPixmap( GetX(), GetY(), sprite.width(), sprite.height(), sprite);
+    painter->drawPixmap( GetX(), GetY(), GetWidth(), GetHeight(), sprite);
     //WRAPPING
-    if( GetX() <   0)                       painter->drawPixmap(GetX()+400, GetY()    ,sprite.width(), sprite.height(), sprite);
-    if( GetX() > 400 -sprite.width())   painter->drawPixmap(GetX()-400, GetY()    ,sprite.width(), sprite.height(), sprite);
-    if( GetY() <   0)                       painter->drawPixmap(GetX()    , GetY()+300,sprite.width(), sprite.height(), sprite);
-    if( GetY() > 300 - sprite.height()) painter->drawPixmap(GetX()    , GetY()-300,sprite.width(), sprite.height(), sprite);
+    if( GetX() < 0){ painter->drawPixmap(
+        GetX()+device_width, GetY(),
+        GetWidth(), GetHeight(),
+        sprite);
+    }
+    if( GetX() > device_width -GetWidth()){ painter->drawPixmap(
+                    GetX()-device_width, GetY(),
+                    GetWidth(), GetHeight(),
+                    sprite);
+    }
+    if( GetY() < 0){ painter->drawPixmap(
+        GetX(), GetY()+device_height,
+        GetWidth(), GetHeight(),
+        sprite);
+    }
+    if( GetY() > device_height - GetHeight()){ painter->drawPixmap(
+        GetX(), GetY()-device_height,
+        GetWidth(), GetHeight(),
+        sprite);
+    }
 
-    if(GetX() <   0         && GetY() <   0)                                   painter->drawPixmap(GetX()+400, GetY()+300,sprite.width(), sprite.height(), sprite);
-    if(GetX() > 400 -sprite.width() && GetY() <   0)                       painter->drawPixmap(GetX()-400, GetY()+300,sprite.width(), sprite.height(), sprite);
-    if(GetX() > 400 -sprite.width() && GetY() > 300 - sprite.height()) painter->drawPixmap(GetX()-400, GetY()-300,sprite.width(), sprite.height(), sprite);
-    if(GetX() <   0         && GetY() > 300 - sprite.height())             painter->drawPixmap(GetX()+400, GetY()-300,sprite.width(), sprite.height(), sprite);
+    if(GetX() < 0 && GetY() < 0){ painter->drawPixmap(
+        GetX()+device_width, GetY()+device_height,
+        GetWidth(), GetHeight(),
+        sprite);
+    }
+    if(GetX() > device_width -GetWidth() && GetY() < 0){ painter->drawPixmap(
+        GetX()-device_width, GetY()+device_height,
+        GetWidth(), GetHeight(),
+        sprite);
+    }
+    if(GetX() > device_width -GetWidth() && GetY() > device_height - GetHeight()){ painter->drawPixmap(
+        GetX()-device_width, GetY()-device_height,
+        GetWidth(), GetHeight(),
+        sprite);
+    }
+    if(GetX() < 0 && GetY() > device_height - GetHeight()){ painter->drawPixmap(
+        GetX()+device_width, GetY()-device_height,
+        GetWidth(), GetHeight(),
+        sprite);
+    }
 }

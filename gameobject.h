@@ -9,22 +9,22 @@ class GameObject : public QObject
 {
     Q_OBJECT
 public:
-    explicit GameObject(QObject *parent = 0, const char *img_path = ":graphics/wasp.png");
-    virtual ~GameObject() noexcept {}
+    explicit GameObject();
 private:
-    QImage      m_sprite;
     const int   m_randomizer;
     int         m_charge;
-    const int   m_charged = 10;
+    const int   m_charged;
 
-    double m_x;
-    double m_y;
-    int    m_hit_dx;
-    int    m_hit_dy;
-    double m_x_speed;
-    double m_y_speed;
-    double m_rot;
-    double m_rot_speed;
+    double  m_x;
+    double  m_y;
+    int     m_width;//
+    int     m_height;//
+    int     m_hit_dx;
+    int     m_hit_dy;
+    double  m_x_speed;
+    double  m_y_speed;
+    double  m_rot;
+    double  m_rot_speed;
 
     const int           m_step;
     static const int    m_max_y_speed = 42;
@@ -34,12 +34,21 @@ private:
     bool   m_facing_right;
 
     std::vector<QImage> m_sprites;
+    int m_current_frame;
+
+protected:
+    float m_frame_progression;
 
 public:
     void    SetX(const double x) noexcept;
     double  GetX() const noexcept;
     void    SetY(const double y) noexcept;
     double  GetY() const noexcept;
+
+    void    SetWidth(const int width) noexcept;
+    int     GetWidth() const noexcept;
+    void    SetHeight(const int height) noexcept;
+    int     GetHeight() const noexcept;
 
     void    SetHitdX(const double hit_dx) noexcept;
     double  GetHitdX() const noexcept;
@@ -59,19 +68,26 @@ public:
     int     GetStep() const noexcept;
     int     GetMaxYSpeed() const noexcept;
     int     Randomize() const noexcept;
+
     void    Kill() noexcept;
     void    Revive() noexcept;
     bool    IsAlive() const noexcept;
+
     void    Charge() noexcept;
     void    ResetCharge() noexcept;
-    bool    IsCharged() const noexcept;
+    double  GetChargeAmount() const noexcept;
+
     void    FaceLeft() noexcept;
     void    FaceRight() noexcept;
     bool    IsFacingRight() const noexcept;
     void    SetOnGround(const bool state) noexcept;
     bool    IsOnGround() const noexcept;
+
     void    AddSprite(const QImage sprite) noexcept;
     QImage  GetSprite(const int sprite_index) const noexcept;
+    int     GetSpritesAmount() const noexcept;
+    void    SetCurrentFrame(const int frame) noexcept;
+    int     GetCurrentFrame() const noexcept;
 
     void   Fall(const QPixmap& background, const double grav) noexcept;
     void   ApplyMovement() noexcept;

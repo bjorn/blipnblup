@@ -6,7 +6,7 @@ class Bubbleaf : public GameObject
 {
     Q_OBJECT
 public:
-    explicit Bubbleaf(GameObject *parent = 0);
+    explicit Bubbleaf();
 
 public slots:
     void ApplyMovement(const int ticks, const std::vector<double>& sine) noexcept;

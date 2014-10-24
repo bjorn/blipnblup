@@ -6,7 +6,7 @@ class Bubble : public GameObject
 {
     Q_OBJECT
 public:
-    explicit Bubble(GameObject *parent = 0);
+    explicit Bubble();
 
     bool Age() noexcept;
 

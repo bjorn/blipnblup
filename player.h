@@ -8,21 +8,23 @@ class Player : public GameObject
 {
     Q_OBJECT
 public:
-    explicit Player(GameObject *parent = 0, const char *img_path = ":/graphics/blup.png");
+    explicit Player(bool blup);
 
-    bool GetUp()    const;
-    bool GetLeft()  const;
-    bool GetRight() const;
-    bool GetDown()  const;
+    bool GetUp()    const noexcept;
+    bool GetLeft()  const noexcept;
+    bool GetRight() const noexcept;
+    bool GetDown()  const noexcept;
 
-    void SetUp(bool state);
-    void SetLeft(bool state);
-    void SetRight(bool state);
-    void SetDown(bool state);
+    void SetUp(bool state) noexcept;
+    void SetLeft(bool state) noexcept;
+    void SetRight(bool state) noexcept;
+    void SetDown(bool state) noexcept;
 
-    void ApplyKeys();
+    void ApplyKeys() noexcept;
     void ApplyMovement(const QPixmap& background);
     Bubble * Shoot();
+
+    void Animate() noexcept;
 
 private:
     bool m_pressed_up;

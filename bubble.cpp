@@ -5,11 +5,20 @@
 
 #include <qdebug.h>
 
-Bubble::Bubble(GameObject *parent) :
-    GameObject(parent, ":/graphics/bubble.png"),
+Bubble::Bubble() :
+    GameObject(),
     m_age(0)
 {
-
+    SetWidth(32);
+    SetHeight(32);
+    int sprite_height = 64;
+    SetHitdX(GetWidth()/2);
+    SetHitdY(GetHeight()/2);
+    QImage bubble_image = QImage(":/graphics/bubbles.png");
+    AddSprite(bubble_image.copy(
+                        0, 0,
+                        sprite_height, sprite_height)
+    );
 }
 
 //AGE BUBBLE AND RETURN TRUE ON OLD
@@ -35,12 +44,10 @@ void Bubble::Draw(QPainter * const painter, const int ticks, const std::vector<d
 {
     int phase = 3 * ticks + Randomize();
     QImage sprite = GetSprite(0);
-    const double width  = sprite.width()  - abs(GetXSpeed())/2 + (2*sine[phase%512]);
-    const double height = sprite.height() + abs(GetXSpeed())/4 + (2*sine[phase%512]);
-    const double dx = (sprite.width()  - width)  / 2.0;
-    const double dy = (sprite.height() - height) / 2.0;
-    SetHitdX( (sprite.width()  + dx) / 2.0 );
-    SetHitdY( (sprite.height() + dy) / 2.0 );
+    const double width  = GetWidth()  - abs(GetXSpeed())/2 + (2*sine[phase%512]);
+    const double height = GetHeight() + abs(GetXSpeed())/4 + (2*sine[phase%512]);
+    const double dx = (GetWidth() - width)  / 2.0;
+    const double dy = (GetHeight() - height) / 2.0;
 
     QPixmap flip = QPixmap::fromImage(sprite.mirrored(!IsFacingRight(), false));
     painter->drawPixmap( GetX()+dx, GetY()+dy, width, height, flip);
