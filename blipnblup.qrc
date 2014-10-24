@@ -1,13 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>graphics/blip.png</file>
-        <file>graphics/blup.png</file>
         <file>graphics/level2.png</file>
         <file>graphics/wasp.png</file>
-        <file>graphics/bubble.png</file>
         <file>graphics/spider.png</file>
-        <file>graphics/wasp_caught.png</file>
-        <file>graphics/bubbleaf.png</file>
         <file>graphics/blipnblup.png</file>
         <file>graphics/bubbles.png</file>
     </qresource>

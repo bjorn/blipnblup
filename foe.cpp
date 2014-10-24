@@ -71,19 +71,26 @@ void Foe::Draw(QPainter * painter) const noexcept
 {
     int device_width = painter->device()->width();
     int device_height = painter->device()->height();
-    double scale = 0.5;
-    QPixmap * bubble = new QPixmap(":/graphics/bubble.png");
+
     QTransform matrix;
     matrix.rotate(GetRotation());
     matrix.scale(1-(2*!IsFacingRight()), 1);
     QImage sprite_o = GetSprite(GetCurrentFrame());
     QPixmap sprite_t = QPixmap::fromImage( sprite_o.transformed(matrix) );
+    QPixmap bubble = QPixmap::fromImage(QImage(":/graphics/bubbles.png").copy(0, 0, 64, 64));
+
+    double scale = 0.5;
+
     const int width  = sprite_t.width()*scale;
     const int height = sprite_t.height()*scale;
+
+    int bubble_width = bubble.width()*scale;
+    int bubble_height = bubble.height()*scale;
+
     const double dx = -(width - GetSprite(GetCurrentFrame()).width()*scale)*0.5;
     const double dy = -(height - GetSprite(GetCurrentFrame()).height()*scale)*0.5;
-    const double bubble_dx = (GetWidth() - bubble->width())/2;
-    const double bubble_dy = (GetHeight() - bubble->height())/2;
+    const double bubble_dx = (GetWidth() - bubble_width)/2;
+    const double bubble_dy = (GetHeight() - bubble_height)/2;
     //DRAW FOE
     painter->drawPixmap(
                 GetX()+dx, GetY()+dy,
@@ -92,8 +99,8 @@ void Foe::Draw(QPainter * painter) const noexcept
     //DRAW BUBBLE
     if (IsCaught()) painter->drawPixmap(
                 GetX()+bubble_dx, GetY()+bubble_dy,
-                bubble->width(), bubble->height(),
-                *bubble);
+                bubble_width, bubble_height,
+                bubble);
     //SPRITE WRAPPING
     //LEFT RIGHT
     if( GetX() < 0){ painter->drawPixmap(
@@ -102,8 +109,8 @@ void Foe::Draw(QPainter * painter) const noexcept
                     sprite_t);
         if (IsCaught()) painter->drawPixmap(
                         GetX()+bubble_dx+device_width, GetY()+bubble_dy,
-                        bubble->width(), bubble->height(),
-                        *bubble);
+                        bubble_width, bubble_height,
+                        bubble);
     }
     if( GetX() > device_width - width){ painter->drawPixmap(
                     GetX()+dx-device_width, GetY()+dy,
@@ -111,8 +118,8 @@ void Foe::Draw(QPainter * painter) const noexcept
                     sprite_t);
         if (IsCaught()) painter->drawPixmap(
                         GetX()+bubble_dx-device_width, GetY()+bubble_dy,
-                        bubble->width(), bubble->height(),
-                        *bubble);
+                        bubble_width, bubble_height,
+                        bubble);
     }
     //TOP BOTTOM
     if( GetY() < 0){ painter->drawPixmap(
@@ -121,8 +128,8 @@ void Foe::Draw(QPainter * painter) const noexcept
                     sprite_t);
         if (IsCaught()) painter->drawPixmap(
                         GetX()+bubble_dx, GetY()+bubble_dy+device_height,
-                        bubble->width(), bubble->height(),
-                        *bubble);
+                        bubble_width, bubble_height,
+                        bubble);
     }
     if( GetY() > device_height - height){ painter->drawPixmap(
                     GetX()+dx, GetY()+dy-device_height,
@@ -130,8 +137,8 @@ void Foe::Draw(QPainter * painter) const noexcept
                     sprite_t);
         if (IsCaught()) painter->drawPixmap(
                         GetX()+bubble_dx, GetY()+bubble_dy-device_height,
-                        bubble->width(), bubble->height(),
-                        *bubble);
+                        bubble_width, bubble_height,
+                        bubble);
     }
     //CORNERS
     if(GetX() < 0 && GetY() < 0){ painter->drawPixmap(
@@ -140,7 +147,7 @@ void Foe::Draw(QPainter * painter) const noexcept
                     sprite_t);
         if (IsCaught()) painter->drawPixmap(
                         GetX()+bubble_dx+device_width, GetY()+bubble_dy+device_height,
-                        bubble->width(), bubble->height(), *bubble);
+                        bubble_width, bubble_height, bubble);
     }
     if(GetX() > device_width - width && GetY() < 0){ painter->drawPixmap(
                     GetX()+dx-device_width, GetY()+dy+device_height,
@@ -148,8 +155,8 @@ void Foe::Draw(QPainter * painter) const noexcept
                     sprite_t);
         if (IsCaught()) painter->drawPixmap(
                         GetX()+bubble_dx-device_width, GetY()+bubble_dy+device_height,
-                        bubble->width(), bubble->height(),
-                        *bubble);
+                        bubble_width, bubble_height,
+                        bubble);
     }
     if(GetX() > device_width - width && GetY() > device_height - height){ painter->drawPixmap(
                     GetX()+dx-device_width, GetY()+dy-device_height,
@@ -157,8 +164,8 @@ void Foe::Draw(QPainter * painter) const noexcept
                     sprite_t);
         if (IsCaught()) painter->drawPixmap(
                         GetX()+bubble_dx-device_width, GetY()+bubble_dy-device_height,
-                        bubble->width(), bubble->height(),
-                        *bubble);
+                        bubble_width, bubble_height,
+                        bubble);
     }
     if(GetX() < 0 && GetY() > device_height - height){ painter->drawPixmap(
                     GetX()+dx+device_width, GetY()+dy-device_height,
@@ -166,8 +173,7 @@ void Foe::Draw(QPainter * painter) const noexcept
                     sprite_t);
         if (IsCaught()) painter->drawPixmap(
                         GetX()+bubble_dx+device_width, GetY()+bubble_dy-device_height,
-                        bubble->width(), bubble->height(),
-                        *bubble);
+                        bubble_width, bubble_height,
+                        bubble);
     }
-    delete bubble;
 }
