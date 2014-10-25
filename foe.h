@@ -2,6 +2,8 @@
 #define FOE_H
 #include <gameobject.h>
 
+#include <QPixmap>
+
 class Foe : public GameObject
 {
     Q_OBJECT
@@ -12,6 +14,7 @@ private:
     bool m_angry;
     const int m_escape;
     int m_escape_ticks;
+    QPixmap m_bubble;
 
 public slots:
     bool IsAngry() const noexcept;
